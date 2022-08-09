@@ -33,21 +33,21 @@
                     <f:formContainers>
                         <f:FormContainer>
                             <f:formElements>
-                                <f:FormElement label="EMail">
+                                <f:FormElement label="{i18n>email}">
                                     <f:fields>
                                         <Input value="{EMail}" id="idEmail" type="Email"/>
                                     </f:fields>
                                 </f:FormElement>
                             </f:formElements>
                             <f:formElements>
-                                <f:FormElement label="Password">
+                                <f:FormElement label="{i18n>password}">
                                     <f:fields>
                                         <Input value="{Password}" id="idPassword" type="Password">
                                         </Input>
                                         <core:Icon
                                             src="sap-icon://show"
                                             size="2rem"
-                                            press="">
+                                            press="onShowHidePassword">
                                         </core:Icon>
                                     </f:fields>
                                 </f:FormElement>
@@ -55,7 +55,7 @@
                             <f:formElements>
                                 <f:FormElement>
                                     <f:fields>
-                                        <Button text="Login"
+                                        <Button text="{i18n>login}"
                                                 press="onLogin"
                                                 width="7rem"
                                                 ariaDescribedBy="defaultButtonDescription genericButtonDescription">

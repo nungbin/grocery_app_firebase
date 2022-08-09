@@ -1,15 +1,18 @@
 sap.ui.define([
+    "sap/m/MessageToast",
     "sap/ui/core/mvc/Controller"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller) {
+    function (MessageToast, Controller) {
         "use strict";
         let firebaseApp, db;
 
         return Controller.extend("groceryappfb.controller.View1", {
             onInit: function () {
+                this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+
                 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
                 const firebaseConfig = {
                     apiKey: "AIzaSyCnZn5FVOvY3sLcqQRDfx6xbkkCm7D2Sts",
@@ -25,19 +28,32 @@ sap.ui.define([
                 db = firebaseApp.firestore();
             },
 
-            onLogin: function() {
-                firebaseApp.auth().signInWithEmailAndPassword("", "")
+            onLogin: function(oEvent) {
+                const email = this.getView().byId("idEmail").getValue(),
+                      pass  = this.getView().byId("idPassword").getValue();
+                const that = this;
+
+                firebaseApp.auth().signInWithEmailAndPassword(email, pass)
                     .then((userCredential) => {
                         // Signed in
-                        var user = userCredential.user;
-                        console.log(user);
-                    // ...
+                        let user = userCredential.user;
+                        MessageToast.show(that._i18n.getText("signInGood"));
                     })
                     .catch((error) => {
-                        var errorCode = error.code;
-                        var errorMessage = error.message;
+                        MessageToast.show(that._i18n.getText("signInBad"));
                     });
 
+            },
+
+            onShowHidePassword: function(oEvent) {
+                //reference: https://jsbin.com/sudasa/edit?css,js,output
+                if (oEvent.getSource().getSrc() === 'sap-icon://show') {
+                    oEvent.getSource().setSrc('sap-icon://hide');
+                    this.getView().byId("idPassword").setType(sap.m.InputType.Text);
+                } else {
+                    oEvent.getSource().setSrc('sap-icon://show');
+                    this.getView().byId("idPassword").setType(sap.m.InputType.Password);
+                }                
             }
         });
     });
