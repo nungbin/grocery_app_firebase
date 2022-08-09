@@ -8,7 +8,7 @@
 |**Floorplan Used**<br>simple|
 |**Service Type**<br>None|
 |**Service URL**<br>N/A
-|**Module Name**<br>prj_test_firebase|
+|**Module Name**<br>grocery_app_firebase|
 |**Application Title**<br>Test Firebase|
 |**Namespace**<br>|
 |**UI5 Theme**<br>sap_fiori_3|
@@ -16,7 +16,7 @@
 |**Enable Code Assist Libraries**<br>False|
 |**Add Eslint configuration**<br>False|
 
-## prj_test_firebase
+## Grocery Mobile App, with Firebase
 
 A Fiori application.
 
