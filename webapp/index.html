@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Grocery App</title>
+    <style>
+        html, body, body > div, #container, #container-uiarea {
+            height: 100%;
+        }
+    </style>
+
+    <script type="text/javascript" src="../cordova.js"></script>
+
+    <script
+        id="sap-ui-bootstrap"
+        src="resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_fiori_3"
+        data-sap-ui-xx-waitForTheme="true"
+        data-sap-ui-resourceroots='{
+            "groceryappfb": "./"
+        }'
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-onInit="module:sap/ui/core/ComponentSupport"
+    ></script>
+
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.9.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.2/firebase-auth-compat.js"></script> -->
+</head>
+<body class="sapUiBody sapUiSizeCompact" id="content">
+    <!-- <div
+        data-sap-ui-component
+        data-name="groceryappfb"
+        data-id="container"
+        data-settings='{"id" : "groceryappfb"}'
+        data-handle-validation="true"
+    ></div> -->
+
+    <script>
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function onDeviceReady() {
+            // doesn't work putting attachInit within 'deviceready' event
+            
+            // https://github.com/myakinkii/cap-xsa-flp-cordova/blob/master/ui5_clientApp/resources/webapp/index.html
+            // sap.ui.getCore().attachInit(function() {
+            //     new sap.m.Shell({
+            //         app: new sap.ui.core.ComponentContainer({
+            //             height : "100%",
+            //             name : "groceryappfb"
+            //         })
+            //     }).placeAt("content");
+            // });
+        }
+
+        // https://github.com/myakinkii/cap-xsa-flp-cordova/blob/master/ui5_clientApp/resources/webapp/index.html
+        sap.ui.getCore().attachInit(function() {
+            new sap.m.Shell({
+                app: new sap.ui.core.ComponentContainer({
+                    height : "100%",
+                    name : "groceryappfb"
+                })
+            }).placeAt("content");
+        });
+    </script>
+</body>
+</html>

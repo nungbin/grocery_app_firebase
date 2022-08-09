@@ -1,0 +1,72 @@
+<mvc:View controllerName="groceryappfb.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc" 
+    displayBlock="true"
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core"
+    >
+    <Page id="page" title="{i18n>title}">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <f:Form id="FormChange354"
+                    editable="true">
+                    <f:title>
+                        <core:Title text="Login" />
+                    </f:title>
+                    <f:layout>
+                        <f:ResponsiveGridLayout
+                            labelSpanXL="3"
+                            labelSpanL="3"
+                            labelSpanM="3"
+                            labelSpanS="12"
+                            adjustLabelSpan="false"
+                            emptySpanXL="4"
+                            emptySpanL="4"
+                            emptySpanM="4"
+                            emptySpanS="0"
+                            columnsXL="1"
+                            columnsL="1"
+                            columnsM="1"
+                            singleContainerFullSize="false" />
+                    </f:layout>
+                    <f:formContainers>
+                        <f:FormContainer>
+                            <f:formElements>
+                                <f:FormElement label="EMail">
+                                    <f:fields>
+                                        <Input value="{EMail}" id="idEmail" type="Email"/>
+                                    </f:fields>
+                                </f:FormElement>
+                            </f:formElements>
+                            <f:formElements>
+                                <f:FormElement label="Password">
+                                    <f:fields>
+                                        <Input value="{Password}" id="idPassword" type="Password">
+                                        </Input>
+                                        <core:Icon
+                                            src="sap-icon://show"
+                                            size="2rem"
+                                            press="">
+                                        </core:Icon>
+                                    </f:fields>
+                                </f:FormElement>
+                            </f:formElements>    
+                            <f:formElements>
+                                <f:FormElement>
+                                    <f:fields>
+                                        <Button text="Login"
+                                                press="onLogin"
+                                                width="7rem"
+                                                ariaDescribedBy="defaultButtonDescription genericButtonDescription">
+                                        </Button>
+                                    </f:fields>
+                                </f:FormElement>
+                            </f:formElements>
+                        </f:FormContainer>
+                    </f:formContainers>
+                </f:Form>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>
