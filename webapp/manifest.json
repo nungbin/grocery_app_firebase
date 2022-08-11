@@ -24,6 +24,10 @@
           "localUri": "localService/metadata.xml",
           "odataVersion": "2.0"
         }
+      },
+      "fb_login": {
+        "uri": "model/fb_login.json",
+        "type": "JSON"
       }
     }
   },
@@ -63,6 +67,10 @@
           "bundleName": "groceryappfb.i18n.i18n"
         }
       },
+      "fb_login_m": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "fb_login"
+      },      
       "": {
         "dataSource": "mainService",
         "preload": true,
@@ -104,6 +112,13 @@
           "target": [
             "TargetView1"
           ]
+        },
+        {
+          "name": "SignedInView",
+          "pattern": "signedIn",
+          "target": [
+             "SignedInView"
+          ]
         }
       ],
       "targets": {
@@ -113,6 +128,13 @@
           "clearControlAggregation": false,
           "viewId": "View1",
           "viewName": "View1"
+        },
+        "SignedInView": {
+            "viewType": "XML",
+            "transition": "slide",
+            "clearControlAggregation": false,
+            "viewId": "ViewSignedIn",
+            "viewName": "ViewSignedIn"  
         }
       }
     },

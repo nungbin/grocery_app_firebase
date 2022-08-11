@@ -1,4 +1,4 @@
-<mvc:View controllerName="groceryappfb.controller.View1"
+<mvc:View controllerName="groceryappfb.controller.ViewSignedIn"
     xmlns:mvc="sap.ui.core.mvc" 
     displayBlock="true"
 	xmlns="sap.m"
@@ -6,14 +6,14 @@
 	xmlns:f="sap.ui.layout.form"
 	xmlns:core="sap.ui.core"
     >
-    <Page id="page" title="{i18n>title}">
+    <Page id="page" 
+          title="Signed In!!!"
+          floatingFooter="true" 
+          showNavButton="true" 
+          navButtonPress=".onNavBack">
         <content>
             <VBox class="sapUiSmallMargin">
-                <f:Form id="FormChange354"
-                    editable="true">
-                    <f:title>
-                        <core:Title text="Login" />
-                    </f:title>
+                <f:Form editable="true">
                     <f:layout>
                         <f:ResponsiveGridLayout
                             labelSpanXL="3"
@@ -29,34 +29,21 @@
                             columnsL="1"
                             columnsM="1"
                             singleContainerFullSize="false" />
-                    </f:layout>                    
+                    </f:layout>
                     <f:formContainers>
                         <f:FormContainer>
                             <f:formElements>
-                                <f:FormElement label="{i18n>email}">
+                                <f:FormElement label="Name">
                                     <f:fields>
-                                        <Input value="{EMail}" id="idEmail" type="Email"/>
+                                        <Input value="{Name}" id="idName" type="Text"/>
                                     </f:fields>
                                 </f:FormElement>
-                            </f:formElements>
-                            <f:formElements>
-                                <f:FormElement label="{i18n>password}">
-                                    <f:fields>
-                                        <Input value="{Password}" id="idPassword" type="Password">
-                                        </Input>
-                                        <core:Icon
-                                            src="sap-icon://show"
-                                            size="2rem"
-                                            press="onShowHidePassword">
-                                        </core:Icon>
-                                    </f:fields>
-                                </f:FormElement>
-                            </f:formElements>    
+                            </f:formElements>                        
                             <f:formElements>
                                 <f:FormElement>
                                     <f:fields>
-                                        <Button text="{i18n>login}"
-                                                press="onLogin"
+                                        <Button text="Add Data"
+                                                press="onAddData"
                                                 width="7rem"
                                                 ariaDescribedBy="defaultButtonDescription genericButtonDescription">
                                         </Button>
@@ -64,9 +51,9 @@
                                 </f:FormElement>
                             </f:formElements>
                         </f:FormContainer>
-                    </f:formContainers>
+                    </f:formContainers>                
                 </f:Form>
             </VBox>
         </content>
     </Page>
-</mvc:View>
+</mvc:View>    

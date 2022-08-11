@@ -1,31 +1,28 @@
 sap.ui.define([
     "sap/m/MessageToast",
-    "sap/ui/core/mvc/Controller"
+    "sap/ui/core/mvc/Controller",
+    "../service/ServiceManager"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (MessageToast, Controller) {
+    function (MessageToast, Controller, ServiceManager) {
         "use strict";
-        let firebaseApp, db;
+        let firebaseApp;
 
         return Controller.extend("groceryappfb.controller.View1", {
             onInit: function () {
-                this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+                let oRouter = this.getOwnerComponent().getRouter();
+                oRouter.getRoute("RouteView1").attachMatched(function(oEvent) {
+                    this._firstView();
+                }, this);
 
-                // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-                const firebaseConfig = {
-                    apiKey: "AIzaSyCnZn5FVOvY3sLcqQRDfx6xbkkCm7D2Sts",
-                    authDomain: "demobook1-bd299.firebaseapp.com",
-                    projectId: "demobook1-bd299",
-                    storageBucket: "demobook1-bd299.appspot.com",
-                    messagingSenderId: "1092205087657",
-                    appId: "1:1092205087657:web:6214731f2d15362f60d2b8",
-                    measurementId: "G-LFRD47GFGB"
-                };
-                
-                firebaseApp = firebase.initializeApp(firebaseConfig);
-                db = firebaseApp.firestore();
+                this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+                firebaseApp = ServiceManager.initFirebase(this);
+            },
+
+            _firstView: function() {
+                firebaseApp = ServiceManager.initFirebase(this);
             },
 
             onLogin: function(oEvent) {
@@ -37,7 +34,9 @@ sap.ui.define([
                     .then((userCredential) => {
                         // Signed in
                         let user = userCredential.user;
-                        MessageToast.show(that._i18n.getText("signInGood"));
+                        //MessageToast.show(that._i18n.getText("signInGood"));
+                        let oRouter = this.getOwnerComponent().getRouter();
+                        oRouter.navTo("SignedInView");
                     })
                     .catch((error) => {
                         MessageToast.show(that._i18n.getText("signInBad"));
