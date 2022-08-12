@@ -28,6 +28,10 @@
       "fb_login": {
         "uri": "model/fb_login.json",
         "type": "JSON"
+      },
+      "fb_signedIn": {
+        "uri": "model/fb_signedin.json",
+        "type": "JSON"
       }
     }
   },
@@ -70,6 +74,10 @@
       "fb_login_m": {
         "type": "sap.ui.model.json.JSONModel",
         "dataSource": "fb_login"
+      },      
+      "fb_signedIn_m": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "fb_signedIn"
       },      
       "": {
         "dataSource": "mainService",

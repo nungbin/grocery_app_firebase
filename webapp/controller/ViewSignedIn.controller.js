@@ -12,6 +12,8 @@ sap.ui.define([
 
         return Controller.extend("groceryappfb.controller.View1", {
             onInit: function() {
+                this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+
                 let oRouter = this.getOwnerComponent().getRouter();
                 oRouter.getRoute("SignedInView").attachMatched(function(oEvent) {
                     this._signedIn();
@@ -22,6 +24,9 @@ sap.ui.define([
 
             _signedIn: function() {
                 firebaseApp = ServiceManager.initFirebase(this);
+                this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
+                this.getView().byId("box0").setModel(this._signedInModel, "Grocery");
+                ServiceManager.getStores(this, firebaseApp);
             },
 
             onNavBack: function(oEvent) {
@@ -29,23 +34,7 @@ sap.ui.define([
             },
 
             onAddData: function(oEvent) {
-                //Add data: https://firebase.google.com/docs/firestore/manage-data/add-data
-                db = firebaseApp.firestore();
-
-                //https://firebase.google.com/docs/firestore/query-data/order-limit-data
-                db.collection("cities").where("state", "!=", "CA").orderBy("state", "desc")
-                .get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        // doc.data() is never undefined for query doc snapshots
-                        console.log(doc.id, " => ", doc.data());
-                    });
-                })
-                .catch((error) => {
-                    console.log("Error getting documents: ", error);
-                });                
                 return;
-
                 // Add a new document with a generated id.
                 db.collection("cities").add({
                     name: "Tokyo",

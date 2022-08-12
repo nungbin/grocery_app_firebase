@@ -12,6 +12,27 @@
           showNavButton="true" 
           navButtonPress=".onNavBack">
         <content>
+            <FlexBox width="100%" id="box0" busy="{/TopFlexBoxBusy}" direction="Column">
+                <items>
+                    <FlexBox width="100%" id="box0_1650549696902" direction="Row">
+                        <items>
+                            <FlexBox width="100%" id="box1" direction="Column">
+                                <items>
+                                    <Label text="Store" width="100%" id="label0"/>
+                                    <ComboBox id="idDDStore" 
+                                                class="sapUiSmallMarginEnd"
+                                                placeholder="{i18n>selectStore}"
+                                                items="{ path: 'Grocery>/DDStore' }"
+                                                selectionChange=".onStoreComboChange">
+                                        <core:Item key="{Grocery>id}" text="{Grocery>name}"/>
+                                    </ComboBox>
+                                </items>
+                            </FlexBox>
+                        </items>
+                    </FlexBox>
+                </items>
+            </FlexBox>
+
             <VBox class="sapUiSmallMargin">
                 <f:Form editable="true">
                     <f:layout>
@@ -43,7 +64,7 @@
                                 <f:FormElement>
                                     <f:fields>
                                         <Button text="Add Data"
-                                                press="onAddData"
+                                                press=".onAddData"
                                                 width="7rem"
                                                 ariaDescribedBy="defaultButtonDescription genericButtonDescription">
                                         </Button>
