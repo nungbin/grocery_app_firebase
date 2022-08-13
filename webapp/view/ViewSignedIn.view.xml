@@ -28,53 +28,23 @@
                                     </ComboBox>
                                 </items>
                             </FlexBox>
+                            <FlexBox width="100%" id="box3" direction="Column">
+                                <items>
+                                    <Label text="Ingredient" width="100%" id="label1"/>
+                                    <ComboBox id="idDDIngre" 
+                                                class="sapUiSmallMarginEnd"
+                                                placeholder="{i18n>selectIngredient}"
+                                                items="{ path: '/DDIngre',                                                
+                                                        sorter: { path: 'text' }          
+                                                    }">
+                                        <core:Item key="{key}" text="{text}"/>
+                                    </ComboBox>
+                                </items>
+                            </FlexBox>
                         </items>
                     </FlexBox>
                 </items>
             </FlexBox>
-
-            <VBox class="sapUiSmallMargin">
-                <f:Form editable="true">
-                    <f:layout>
-                        <f:ResponsiveGridLayout
-                            labelSpanXL="3"
-                            labelSpanL="3"
-                            labelSpanM="3"
-                            labelSpanS="12"
-                            adjustLabelSpan="false"
-                            emptySpanXL="4"
-                            emptySpanL="4"
-                            emptySpanM="4"
-                            emptySpanS="0"
-                            columnsXL="1"
-                            columnsL="1"
-                            columnsM="1"
-                            singleContainerFullSize="false" />
-                    </f:layout>
-                    <f:formContainers>
-                        <f:FormContainer>
-                            <f:formElements>
-                                <f:FormElement label="Name">
-                                    <f:fields>
-                                        <Input value="{Name}" id="idName" type="Text"/>
-                                    </f:fields>
-                                </f:FormElement>
-                            </f:formElements>                        
-                            <f:formElements>
-                                <f:FormElement>
-                                    <f:fields>
-                                        <Button text="Add Data"
-                                                press=".onAddData"
-                                                width="7rem"
-                                                ariaDescribedBy="defaultButtonDescription genericButtonDescription">
-                                        </Button>
-                                    </f:fields>
-                                </f:FormElement>
-                            </f:formElements>
-                        </f:FormContainer>
-                    </f:formContainers>                
-                </f:Form>
-            </VBox>
         </content>
     </Page>
 </mvc:View>    

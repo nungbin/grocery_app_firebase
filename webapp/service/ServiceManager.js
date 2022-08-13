@@ -27,8 +27,8 @@ sap.ui.define([
                     let t = { };
                     t.id = doc.id;
                     t.name = doc.data().name;
+                    t.shortName = doc.data().shortName;
                     tStores.push(t);
-                    console.log(doc.id, " => ", doc.data());
                 });
                 controller.getView().byId("box0").getModel("Grocery").setProperty("/DDStore", tStores)
                 oGlobalBusyDialog.close();
