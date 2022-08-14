@@ -38,7 +38,11 @@ sap.ui.define([
             const txt = controller._i18n.getText("retrievingStores");
             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
             oGlobalBusyDialog.open();
+            await this._getStores(controller, firebaseApp);
+            oGlobalBusyDialog.close();         
+        },
 
+        async _getStores(controller, firebaseApp) {
             //Add data: https://firebase.google.com/docs/firestore/manage-data/add-data
             //https://firebase.google.com/docs/firestore/query-data/order-limit-data
             //db.collection("cities").where("state", "!=", "CA").orderBy("state", "desc")
@@ -55,11 +59,10 @@ sap.ui.define([
                     tStores.push(t);
                 });
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/DDStore", tStores)
-                oGlobalBusyDialog.close();
             }
             catch (error) {
                 console.log('Error getting documents', error);
-            }            
+            }
         },
 
         async getIngrdients(controller, firebaseApp, storeName) {
@@ -88,11 +91,11 @@ sap.ui.define([
                     tIngres.push(t);
                 });
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/DDIngre", tIngres);
-                oGlobalBusyDialog.close();
             }
             catch (error) {
                 console.log('Error getting documents', error);
-            }            
+            }
+            oGlobalBusyDialog.close();            
         },
         
         async addIngredientToDatabase(controller, firebaseApp) {
@@ -114,8 +117,22 @@ sap.ui.define([
                     url:        ingreData.DDIngre[keyIngre].url
                 });
 
+                await this._getGroceries(controller, firebaseApp);
+            }
+            catch (error) {
+                console.log('Error getting documents', error);
+            }
+            
+            oGlobalBusyDialog.close();
+        },
+
+        async _getGroceries(controller, firebaseApp) {
+            const tGrocery = [];
+            const db = firebaseApp.firestore();
+
+            try {
                 let i=0;
-                const snapshot = await db.collection("grocery").orderBy("storeName").get();
+                const snapshot = await db.collection("grocery").orderBy("storeName").orderBy("ingredient").get();
                 snapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
                     let t = { };
@@ -126,11 +143,21 @@ sap.ui.define([
                     t.URL = doc.data().url;
                     tGrocery.push(t);
                 });
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", tGrocery);
             }
-            catch (error) {
-                console.log('Error getting documents', error);
+            catch(error) {
+                console.log('Error getting documents', error); 
             }
-            controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", tGrocery);
+        },
+
+        async initialLoad(controller, firebaseApp, dialogText) {
+            const txt = controller._i18n.getText(dialogText);
+            const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+            oGlobalBusyDialog.open();
+
+            await this._getStores(controller, firebaseApp);
+            await this._getGroceries(controller, firebaseApp);
+
             oGlobalBusyDialog.close();
         }
     }

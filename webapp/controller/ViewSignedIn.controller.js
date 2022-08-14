@@ -1,12 +1,13 @@
 sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/core/mvc/Controller",
+    "sap/ui/core/Fragment",
     "../service/ServiceManager"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (MessageToast, Controller, ServiceManager) {
+    function (MessageToast, Controller, Fragment, ServiceManager) {
         "use strict";
         let firebaseApp, db;
 
@@ -26,7 +27,7 @@ sap.ui.define([
                 firebaseApp = ServiceManager.initFirebase(this);
                 this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
                 this.getView().byId("page2").setModel(this._signedInModel, "Grocery");
-                ServiceManager.getStores(this, firebaseApp);
+                ServiceManager.initialLoad(this, firebaseApp, "initialLoad");
             },
 
             onNavBack: function(oEvent) {
@@ -46,7 +47,31 @@ sap.ui.define([
             },
 
             onHandleRefresh: function(oEvent) {
+                ServiceManager.initialLoad(this, firebaseApp, "initialLoad");
                 oEvent.getSource().hide();
-            }           
+            },
+            
+            onPressIngreURL: function(oEvent) {
+                let that = this;
+                // create dialog lazily
+                if (!this.byId("idImageDialog")) {
+                    // load asynchronous XML fragment
+                    Fragment.load({
+                        id: that.getView().getId(),
+                        name: "groceryappfb.view.image",
+                        controller: this
+                    }).then(function (oDialog) {
+                        // connect dialog to the root view of this component (models, lifecycle)
+                        that.getView().addDependent(oDialog);
+                        oDialog.open();
+                    });
+                } else {
+                    this.byId("idImageDialog").open();
+                }
+            },
+
+            onCloseImageDialog: function(oEvent) {
+                this.byId("idImageDialog").close();
+            }
         });
     });
