@@ -32,6 +32,10 @@ sap.ui.define([
             },
 
             onLogin: function(oEvent) {
+                const txt = this._i18n.getText("signingIn");
+                const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+                oGlobalBusyDialog.open();
+    
                 const email = this.getView().byId("idEmail").getValue(),
                       pass  = this.getView().byId("idPassword").getValue();
                 const that = this;
@@ -42,10 +46,12 @@ sap.ui.define([
                         let user = userCredential.user;
                         //MessageToast.show(that._i18n.getText("signInGood"));
                         let oRouter = this.getOwnerComponent().getRouter();
+                        oGlobalBusyDialog.close();
                         oRouter.navTo("SignedInView");
                     })
                     .catch((error) => {
                         MessageToast.show(that._i18n.getText("signInBad"));
+                        oGlobalBusyDialog.close();
                     });
             },
 

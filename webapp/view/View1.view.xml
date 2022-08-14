@@ -6,7 +6,7 @@
 	xmlns:f="sap.ui.layout.form"
 	xmlns:core="sap.ui.core"
     >
-    <Page id="page" title="{i18n>title}">
+    <Page id="page" showHeader="false">
         <content>
             <VBox class="sapUiSmallMargin">
                 <f:Form id="FormChange354"

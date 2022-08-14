@@ -6,12 +6,12 @@
 	xmlns:f="sap.ui.layout.form"
 	xmlns:core="sap.ui.core"
     >
-    <Page id="page" 
-          title="Signed In!!!"
-          floatingFooter="true" 
-          showNavButton="true" 
-          navButtonPress=".onNavBack">
+    <Page id="page2" 
+          showHeader="false">
         <content>
+			<PullToRefresh
+				id="pullToRefresh"
+				refresh="onHandleRefresh" />        
             <FlexBox width="100%" id="box0" busy="{/TopFlexBoxBusy}" direction="Column">
                 <items>
                     <FlexBox width="100%" id="box0_1650549696902" direction="Row">
@@ -44,15 +44,15 @@
                     </FlexBox>
                 </items>
             </FlexBox>
-            <FlexBox width="100%" id="box0_1650550633501">
+            <FlexBox width="100%" id="boxGroceryList">
                 <items>
-                    <Table noDataText="Hit the Add button to start adding groceries..." 
+                    <Table noDataText="{i18n>addIngredient}" 
                             id="iDtblGroceryList"
                             inset="false"
                             selectionChange=".onSelectedGrocery"
                             mode="None"
                             items="{
-                            path: '/GroceryList',
+                            path: 'Grocery>/GroceryList',
                             sorter: {
                                 path: 'Store'
                             }
@@ -103,10 +103,10 @@
                                     <CheckBox selected="false"
                                                 select=".onSelectedGrocery"
                                     />
-                                    <Text text="{Store}"      id="iDTXTStore"/>
-                                    <Link text="{Ingredient}" 
+                                    <Text text="{Grocery>Store}"      id="iDTXTStore"/>
+                                    <Link text="{Grocery>Ingredient}" 
                                             emphasized="true"
-                                            enabled="{= ${URL} === '' ? false : true }"
+                                            enabled="{= ${Grocery>URL} === null ? false : true }"
                                             press=".onPressIngreURL"
                                             id="iDTXTIngre" 
                                     />

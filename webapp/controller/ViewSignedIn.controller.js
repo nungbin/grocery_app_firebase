@@ -25,7 +25,7 @@ sap.ui.define([
             _signedIn: function() {
                 firebaseApp = ServiceManager.initFirebase(this);
                 this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
-                this.getView().byId("box0").setModel(this._signedInModel, "Grocery");
+                this.getView().byId("page2").setModel(this._signedInModel, "Grocery");
                 ServiceManager.getStores(this, firebaseApp);
             },
 
@@ -41,24 +41,12 @@ sap.ui.define([
             },
 
             onIngreComboChange: function(oEvent) {
-                debugger;
+                firebaseApp = ServiceManager.initFirebase(this);
+                ServiceManager.addIngredientToDatabase(this, firebaseApp);
             },
 
-            onAddData: function(oEvent) {
-                return;
-                // Add a new document with a generated id.
-                db.collection("cities").add({
-                    name: "Tokyo",
-                    country: "Japan"
-                })
-                .then((docRef) => {
-                    console.log("Document written with ID: ", docRef.id);
-                    MessageToast.show(docRef.id + " being added!");
-                })
-                .catch((error) => {
-                    console.log("Error adding document: ", error);
-                    MessageToast.show(error);
-                });                
-            }            
+            onHandleRefresh: function(oEvent) {
+                oEvent.getSource().hide();
+            }           
         });
     });
