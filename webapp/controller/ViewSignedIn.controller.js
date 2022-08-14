@@ -33,6 +33,17 @@ sap.ui.define([
                 window.history.go(-1);
             },
 
+            onStoreComboChange: function(oEvent) {
+                const keyStore = oEvent.getSource().getSelectedKey();
+                const keyItem  = oEvent.getSource().getSelectedItem();
+                firebaseApp = ServiceManager.initFirebase(this);
+                ServiceManager.getIngrdients(this, firebaseApp, keyStore);
+            },
+
+            onIngreComboChange: function(oEvent) {
+                debugger;
+            },
+
             onAddData: function(oEvent) {
                 return;
                 // Add a new document with a generated id.

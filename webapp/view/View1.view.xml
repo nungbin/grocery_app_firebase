@@ -52,21 +52,23 @@
                                     </f:fields>
                                 </f:FormElement>
                             </f:formElements>    
-                            <f:formElements>
-                                <f:FormElement>
-                                    <f:fields>
-                                        <Button text="{i18n>login}"
-                                                press="onLogin"
-                                                width="7rem"
-                                                ariaDescribedBy="defaultButtonDescription genericButtonDescription">
-                                        </Button>
-                                    </f:fields>
-                                </f:FormElement>
-                            </f:formElements>
                         </f:FormContainer>
                     </f:formContainers>
                 </f:Form>
             </VBox>
         </content>
+        <footer>
+            <Bar>
+                <contentLeft>
+                    <Button text="{i18n>login}"
+                            press="onLogin"
+                            width="7rem"
+                            type="Emphasized"
+                            icon="sap-icon://accept"
+                            ariaDescribedBy="defaultButtonDescription genericButtonDescription">
+                    </Button>
+                </contentLeft>
+            </Bar>        
+        </footer>
     </Page>
 </mvc:View>

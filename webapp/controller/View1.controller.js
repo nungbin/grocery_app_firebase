@@ -17,6 +17,12 @@ sap.ui.define([
                     this._firstView();
                 }, this);
 
+                //https://stackoverflow.com/questions/25988860/how-call-a-function-by-pressing-enter-key-in-password-input-field-in-login-view
+                const input = this.getView().byId("idPassword");
+                input.onsapenter = (function(oEvent) {
+                  this.onLogin(oEvent);
+                }).bind(this);
+
                 this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
                 firebaseApp = ServiceManager.initFirebase(this);
             },
@@ -41,7 +47,6 @@ sap.ui.define([
                     .catch((error) => {
                         MessageToast.show(that._i18n.getText("signInBad"));
                     });
-
             },
 
             onShowHidePassword: function(oEvent) {

@@ -20,10 +20,10 @@
                                 <items>
                                     <Label text="Store" width="100%" id="label0"/>
                                     <ComboBox id="idDDStore" 
-                                                class="sapUiSmallMarginEnd"
-                                                placeholder="{i18n>selectStore}"
-                                                items="{ path: 'Grocery>/DDStore' }"
-                                                selectionChange=".onStoreComboChange">
+                                              class="sapUiSmallMarginEnd"
+                                              placeholder="{i18n>selectStore}"
+                                              items="{ path: 'Grocery>/DDStore' }"
+                                              selectionChange=".onStoreComboChange">
                                         <core:Item key="{Grocery>id}" text="{Grocery>name}"/>
                                     </ComboBox>
                                 </items>
@@ -32,17 +32,108 @@
                                 <items>
                                     <Label text="Ingredient" width="100%" id="label1"/>
                                     <ComboBox id="idDDIngre" 
-                                                class="sapUiSmallMarginEnd"
-                                                placeholder="{i18n>selectIngredient}"
-                                                items="{ path: '/DDIngre',                                                
-                                                        sorter: { path: 'text' }          
-                                                    }">
-                                        <core:Item key="{key}" text="{text}"/>
+                                              class="sapUiSmallMarginEnd"
+                                              placeholder="{i18n>selectIngredient}"
+                                              items="{ path: 'Grocery>/DDIngre' }"
+                                              selectionChange=".onIngreComboChange">
+                                        <core:Item key="{Grocery>id}" text="{Grocery>name}"/>
                                     </ComboBox>
                                 </items>
                             </FlexBox>
                         </items>
                     </FlexBox>
+                </items>
+            </FlexBox>
+            <FlexBox width="100%" id="box0_1650550633501">
+                <items>
+                    <Table noDataText="Hit the Add button to start adding groceries..." 
+                            id="iDtblGroceryList"
+                            inset="false"
+                            selectionChange=".onSelectedGrocery"
+                            mode="None"
+                            items="{
+                            path: '/GroceryList',
+                            sorter: {
+                                path: 'Store'
+                            }
+                        }"
+                    >
+                        <columns>
+                            <Column width="3.5em">
+                                <Text text="" />
+                            </Column>
+                            <Column id="column1" width="100%">
+                                <Text text="Store" />
+                            </Column>
+                            <Column id="column2" 
+                                    width="100%">
+                                <header>
+                                    <Label text="Ingredient" id="label2"/>
+                                </header>
+                            </Column>
+                            <Column id="column3" 
+                                    minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                    width="100%" 
+                                    >
+                                <header>
+                                    <Label text="Note/Recipe" id="label3"/>
+                                </header>
+                            </Column>
+
+                            <Column width="25%"
+                                    minScreenWidth="Tablet"
+                                            demandPopin="true"
+                            >
+                            </Column>
+                            <Column width="25%"
+                                    minScreenWidth="Tablet"
+                                            demandPopin="true"
+                            >
+                            </Column>
+                            <Column visible="false"></Column>                          
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Detail" 
+                                            id="iDtblGroceryListItem" 
+                                            vAlign="Middle"
+                                            detailPress=".onGroceryItemEdit" 
+                            >
+                                <cells>
+                                    <CheckBox selected="false"
+                                                select=".onSelectedGrocery"
+                                    />
+                                    <Text text="{Store}"      id="iDTXTStore"/>
+                                    <Link text="{Ingredient}" 
+                                            emphasized="true"
+                                            enabled="{= ${URL} === '' ? false : true }"
+                                            press=".onPressIngreURL"
+                                            id="iDTXTIngre" 
+                                    />
+                                    <!-- controls within <HBox/> count as one column -->
+                                    <Input
+                                        id="iDTXTRecipe"
+                                        placeholder="Enter recipe"
+                                        value="{Recipe}"
+                                        editable="false"
+                                        liveChange=".onRecipeChange"
+                                        class="sapUiSmallMarginBottom">
+                                    </Input>
+                                    <Button  
+                                            type="Transparent" 
+                                            visible="false"
+                                            icon="sap-icon://save"
+                                            press=".onSaveRecipe"/>
+                                    <Button 
+                                            type="Transparent" 
+                                            visible="false"
+                                            icon="sap-icon://cancel"
+                                            press=".onCancelRecipe"/>
+                                    <Text text="{UID}" id="iDUID"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
                 </items>
             </FlexBox>
         </content>
