@@ -52,7 +52,9 @@ sap.ui.define([
             },
             
             onPressIngreURL: function(oEvent) {
-                let that = this;
+                let that = this,
+                    iRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oEvent.getSource().getParent());
+
                 // create dialog lazily
                 if (!this.byId("idImageDialog")) {
                     // load asynchronous XML fragment
@@ -62,6 +64,10 @@ sap.ui.define([
                         controller: this
                     }).then(function (oDialog) {
                         // connect dialog to the root view of this component (models, lifecycle)
+                        that._imageUrlModel = that.getOwnerComponent().getModel("fb_imageUrl_m");
+                        that._imageUrlModel.getData().ingredient = that._signedInModel.getData().GroceryList[iRowIndex].Ingredient;
+                        that._imageUrlModel.getData().imageURL = that._signedInModel.getData().GroceryList[iRowIndex].URL;
+                        that.byId("idImageDialog").setModel(that._imageUrlModel, "image");                                
                         that.getView().addDependent(oDialog);
                         oDialog.open();
                     });
@@ -72,6 +78,10 @@ sap.ui.define([
 
             onCloseImageDialog: function(oEvent) {
                 this.byId("idImageDialog").close();
+            },
+
+            onHandleReject: function(oEvent) {
+                alert("Hi");
             }
         });
     });

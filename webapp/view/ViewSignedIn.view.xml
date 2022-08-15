@@ -47,17 +47,20 @@
             <FlexBox width="100%" id="boxGroceryList">
                 <items>
                     <Table noDataText="{i18n>addIngredient}" 
-                            id="iDtblGroceryList"
-                            inset="false"
-                            selectionChange=".onSelectedGrocery"
-                            mode="None"
-                            items="{
-                            path: 'Grocery>/GroceryList',
-                            sorter: {
-                                path: 'Store'
-                            }
-                        }"
+                           id="iDtblGroceryList"
+                           inset="false"
+                           selectionChange=".onSelectedGrocery"
+                           mode="None"
+                           items="{
+                             path: 'Grocery>/GroceryList'
+                           }"
                     >
+                        <swipeContent>
+                            <Button
+                                text="Delete Item"
+                                type="Reject"
+                                press=".onHandleReject" />
+                        </swipeContent>
                         <columns>
                             <Column width="3.5em">
                                 <Text text="" />
@@ -73,7 +76,7 @@
                             </Column>
                             <Column id="column3" 
                                     minScreenWidth="Tablet"
-                                            demandPopin="true"
+                                    demandPopin="true"
                                     width="100%" 
                                     >
                                 <header>
@@ -83,12 +86,12 @@
 
                             <Column width="25%"
                                     minScreenWidth="Tablet"
-                                            demandPopin="true"
+                                    demandPopin="true"
                             >
                             </Column>
                             <Column width="25%"
                                     minScreenWidth="Tablet"
-                                            demandPopin="true"
+                                    demandPopin="true"
                             >
                             </Column>
                             <Column visible="false"></Column>                          
@@ -101,14 +104,14 @@
                             >
                                 <cells>
                                     <CheckBox selected="false"
-                                                select=".onSelectedGrocery"
+                                              select=".onSelectedGrocery"
                                     />
                                     <Text text="{Grocery>Store}"      id="iDTXTStore"/>
                                     <Link text="{Grocery>Ingredient}" 
-                                            emphasized="true"
-                                            enabled="{= ${Grocery>URL} === null ? false : true }"
-                                            press=".onPressIngreURL"
-                                            id="iDTXTIngre" 
+                                          emphasized="true"
+                                          enabled="{= ${Grocery>URL} === null ? false : true }"
+                                          press=".onPressIngreURL"
+                                          id="iDTXTIngre" 
                                     />
                                     <!-- controls within <HBox/> count as one column -->
                                     <Input

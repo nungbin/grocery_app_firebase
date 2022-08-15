@@ -32,6 +32,10 @@
       "fb_signedIn": {
         "uri": "model/fb_signedin.json",
         "type": "JSON"
+      },
+      "fb_imageUrl": {
+        "uri": "model/fb_imageUrl.json",
+        "type": "JSON"
       }
     }
   },
@@ -79,6 +83,10 @@
         "type": "sap.ui.model.json.JSONModel",
         "dataSource": "fb_signedIn"
       },      
+      "fb_imageUrl_m": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "fb_imageUrl"
+      },
       "": {
         "dataSource": "mainService",
         "preload": true,
