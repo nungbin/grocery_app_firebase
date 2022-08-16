@@ -2,12 +2,14 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/core/mvc/Controller",
     "sap/ui/core/Fragment",
+    "sap/m/MessageBox",
+    "sap/m/MessageToast",     
     "../service/ServiceManager"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (MessageToast, Controller, Fragment, ServiceManager) {
+    function (MessageToast, Controller, Fragment, MessageBox, Messagetoast, ServiceManager) {
         "use strict";
         let firebaseApp, db;
 
@@ -81,7 +83,47 @@ sap.ui.define([
             },
 
             onHandleReject: function(oEvent) {
-                alert("Hi");
+                const that = this;
+                const db = firebaseApp.firestore();
+                let groceryList, groceryID;
+
+                //https://sapui5.hana.ondemand.com/sdk/#/topic/a01822c503014bc0bc6e31dfe7906817
+                var oList = this.getView().byId("iDtblGroceryList"); // get the list using its Id
+                var oSwipedItem = oList.getSwipedItem(); // Get which list item is swiped to delete
+                let iDirtyRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oSwipedItem);
+                if (iDirtyRowIndex >= 0) {
+                    groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                    groceryID = groceryList[iDirtyRowIndex].id;
+
+                    //Confirm to delete grocery
+                    const sTitle = this._i18n.getText("confirmation");
+                    let msgIngre = this._i18n.getText("confirmDeleteIngredient");
+                    msgIngre = msgIngre.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
+                    MessageBox.show(msgIngre, {
+                        icon: MessageBox.Icon.QUESTION,
+                        title: sTitle ,
+                        actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                        emphasizedAction: MessageBox.Action.NO,
+                        onClose: function (oAction) {
+                            if (oAction === 'YES') {
+                                let txt = that._i18n.getText("deletingIngre");
+                                txt = txt.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
+                                const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+                                oGlobalBusyDialog.open();
+
+                                db.collection("grocery").doc(groceryID).delete().then(() => {
+                                    groceryList.splice(iDirtyRowIndex, 1);
+                                    oList.removeAggregation("items", oSwipedItem); // Remove this aggregation to delete list item from list
+                                    oList.swipeOut(); // we are done, hide the swipeContent from screen        
+                                    oGlobalBusyDialog.close();
+                                }).catch((error) => {
+                                    console.error("Error removing document: ", error);
+                                    oGlobalBusyDialog.close();
+                                });
+                            }
+                        }
+                    });
+                }
             }
         });
     });

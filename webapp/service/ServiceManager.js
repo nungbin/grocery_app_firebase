@@ -155,7 +155,6 @@ sap.ui.define([
             const sTitle = controller._i18n.getText("confirmation");
             msgIngre = msgIngre.replace("&&", enteredIngredient);
             if (!this._checkIfIngredientExists(controller)) {
-                debugger;
                 MessageBox.show(msgIngre, {
                     icon: MessageBox.Icon.QUESTION,
                     title: sTitle ,
@@ -223,7 +222,7 @@ sap.ui.define([
                 snapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
                     let t = { };
-                    t.id = i;
+                    t.id = doc.id;
                     i++;
                     t.Store = doc.data().storeName;
                     t.Ingredient = doc.data().ingredient;
