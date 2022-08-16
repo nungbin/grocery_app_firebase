@@ -36,6 +36,10 @@
       "fb_imageUrl": {
         "uri": "model/fb_imageUrl.json",
         "type": "JSON"
+      },
+      "pass": {
+        "uri": "model/pass.json",
+        "type": "JSON"
       }
     }
   },
@@ -86,6 +90,10 @@
       "fb_imageUrl_m": {
         "type": "sap.ui.model.json.JSONModel",
         "dataSource": "fb_imageUrl"
+      },
+      "pass_m": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "pass"
       },
       "": {
         "dataSource": "mainService",

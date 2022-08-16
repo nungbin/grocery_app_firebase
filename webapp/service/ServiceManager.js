@@ -12,6 +12,12 @@ sap.ui.define([
             return firebase.initializeApp(firebaseConfig);
         },
 
+        initPass(controller) {
+            const passModel = controller.getOwnerComponent().getModel("pass_m").getData();
+            controller.getView().byId("idEmail").setValue(passModel.email);
+            controller.getView().byId("idPassword").setValue(passModel.pass);
+        },
+
         validateEmailAndPassword(controller) {
             const email = controller.getView().byId("idEmail").getValue(),
                   pass  = controller.getView().byId("idPassword").getValue();

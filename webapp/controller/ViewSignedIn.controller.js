@@ -82,7 +82,7 @@ sap.ui.define([
                 this.byId("idImageDialog").close();
             },
 
-            onHandleReject: function(oEvent) {
+            onHandleDelete: function(oEvent) {
                 const that = this;
                 const db = firebaseApp.firestore();
                 let groceryList, groceryID;
@@ -113,13 +113,17 @@ sap.ui.define([
 
                                 db.collection("grocery").doc(groceryID).delete().then(() => {
                                     groceryList.splice(iDirtyRowIndex, 1);
-                                    oList.removeAggregation("items", oSwipedItem); // Remove this aggregation to delete list item from list
+                                    that.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryList);
+                                    //oList.removeAggregation("items", oSwipedItem); // Remove this aggregation to delete list item from list
                                     oList.swipeOut(); // we are done, hide the swipeContent from screen        
                                     oGlobalBusyDialog.close();
                                 }).catch((error) => {
                                     console.error("Error removing document: ", error);
                                     oGlobalBusyDialog.close();
                                 });
+                            }
+                            else {
+                                oList.swipeOut(); // we are done, hide the swipeContent from screen        
                             }
                         }
                     });

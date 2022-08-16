@@ -34,7 +34,9 @@
                                     <ComboBox id="idDDIngre" 
                                               class="sapUiSmallMarginEnd"
                                               placeholder="{i18n>selectIngredient}"
-                                              items="{ path: 'Grocery>/DDIngre' }"
+                                              items="{ path: 'Grocery>/DDIngre',
+                                                       sorter: { path: 'name' }  
+                                                     }"
                                               selectionChange=".onIngreComboChange">
                                         <core:Item key="{Grocery>id}" text="{Grocery>name}"/>
                                     </ComboBox>
@@ -59,7 +61,7 @@
                             <Button
                                 text="Delete Item"
                                 type="Reject"
-                                press=".onHandleReject" />
+                                press=".onHandleDelete" />
                         </swipeContent>
                         <columns>
                             <Column width="3.5em">

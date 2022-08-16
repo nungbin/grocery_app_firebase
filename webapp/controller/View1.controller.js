@@ -12,6 +12,7 @@ sap.ui.define([
 
         return Controller.extend("groceryappfb.controller.View1", {
             onInit: function () {
+                //Password field is not contained in a form
                 let oRouter = this.getOwnerComponent().getRouter();
                 oRouter.getRoute("RouteView1").attachMatched(function(oEvent) {
                     this._firstView();
@@ -26,6 +27,7 @@ sap.ui.define([
                 this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
                 this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
                 firebaseApp = ServiceManager.initFirebase(this);
+                ServiceManager.initPass(this);
             },
 
             _firstView: function() {
