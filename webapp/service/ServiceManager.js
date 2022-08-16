@@ -156,7 +156,7 @@ sap.ui.define([
             const that = this;
             const oController = controller;
             const oFirebaseApp = firebaseApp;
-            const enteredIngredient = controller.byId("idDDIngre").getValue();
+            const enteredIngredient = controller.getView().byId("idDDIngre").getValue();
             let msgIngre = controller._i18n.getText("missingIngredient");
             const sTitle = controller._i18n.getText("confirmation");
             msgIngre = msgIngre.replace("&&", enteredIngredient);
@@ -166,20 +166,65 @@ sap.ui.define([
                     title: sTitle ,
                     actions: [MessageBox.Action.YES, MessageBox.Action.NO],
                     emphasizedAction: MessageBox.Action.NO,
-                    onClose: function (oAction) {
+                    onClose: async function (oAction) {
                         if (oAction === 'YES') {
-                            const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Adding " + enteredingredient + " to database..."});
+                            const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Adding " + enteredIngredient + " to database..."});
                             oGlobalBusyDialog.open();
                             //insert ingredient to database
+                            await that.insertIngredientToDatabase(controller, firebaseApp);
 
                             oGlobalBusyDialog.close();
                         }
+                        await that.confirmToAddGrocery(controller, firebaseApp);
                     }
                 });
+            } else {
+                await this.confirmToAddGrocery(controller, firebaseApp);
+            }
+        },
+
+        async insertIngredientToDatabase(controller, firebaseApp) {
+            const enteredIngredient = controller.getView().byId("idDDIngre").getValue();
+            //const keyStore = controller.getView().byId("idDDStore").getValue();
+            const keyStore = controller.getView().byId("idDDStore").getSelectedKey();
+            const storeModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/DDStore");
+            let ingredient = {
+                English: enteredIngredient,
+                Chinese: "",
+                Thai:    "",
+                url:     null
+            };
+            storeModel.forEach((store) => {
+                ingredient[store.id] = false;
+            })
+            ingredient[keyStore] = true;
+
+            const db = firebaseApp.firestore();
+            try {
+                await db.collection("ingredient").add(ingredient);
+                let ingreModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/DDIngre");
+                let tIngre = {
+                    id:   ingreModel.length,
+                    name: enteredIngredient,
+                    url:  null
+                }
+                ingreModel.push(tIngre);
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/DDIngre", ingreModel);
+            }
+            catch (error) {
+                console.log('Error getting documents', error);
             }
 
+        },
+
+        async confirmToAddGrocery(controller, firebaseApp) {
             //Confirm to add grocery
-            msgIngre = controller._i18n.getText("confirmAddIngredient");
+            const that = this;
+            const oController = controller;
+            const oFirebaseApp = firebaseApp;
+            const sTitle = controller._i18n.getText("confirmation");
+            const enteredIngredient = controller.getView().byId("idDDIngre").getValue();
+            let msgIngre = controller._i18n.getText("confirmAddIngredient");
             msgIngre = msgIngre.replace("&&", enteredIngredient);
             MessageBox.show(msgIngre, {
                 icon: MessageBox.Icon.QUESTION,
@@ -197,12 +242,18 @@ sap.ui.define([
                               storeText = oController.byId("idDDStore").getSelectedItem().getText(),
                               keyIngre  = oController.byId("idDDIngre").getSelectedKey();
                         let ingreData = oController.getView().byId("page2").getModel("Grocery").getData();
+                        let tURL=null;
+
+                        if (keyIngre.length > 0) {
+                            tURL = ingreData.DDIngre[keyIngre].url;
+                        }
                         const db = oFirebaseApp.firestore();
                         try {
                             await db.collection("grocery").add({
                                 storeName:    storeText,
                                 ingredient:   enteredIngredient,
-                                url:          ingreData.DDIngre[keyIngre].url,
+                                recipe:       "",
+                                url:          tURL,
                                 signedInUser: oController._signedInModel.getProperty("/signedInUser"),
                                 timestamp:    firebase.firestore.FieldValue.serverTimestamp()
                             });
@@ -243,6 +294,7 @@ sap.ui.define([
         },
 
         async initialLoad(controller, firebaseApp, dialogText) {
+            const that = this;
             const txt = controller._i18n.getText(dialogText);
             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
             oGlobalBusyDialog.open();
@@ -251,6 +303,7 @@ sap.ui.define([
                 this._getStores(controller, firebaseApp),
                 this._getGroceries(controller, firebaseApp)
             ]).then((values) => {
+                that.getView().byId("idDDIngre").clearSelection();
                 oGlobalBusyDialog.close();
             })
             .catch((error) => {

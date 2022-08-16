@@ -43,9 +43,31 @@ sap.ui.define([
                 ServiceManager.getIngrdients(this, firebaseApp, keyStore);
             },
 
-            onIngreComboChange: function(oEvent) {
+            onBtnAdd: function(oEvent) {
+                const keyStore = this.getView().byId("idDDStore").getValue();
+                const enteredingredient = this.getView().byId("idDDIngre").getValue();
+                const msgSelectStore = this._i18n.getText("selectStore");
+                const msgSelectIngredient = this._i18n.getText("selectIngredient");
+        
+                if ( keyStore.length === 0 ) {
+                  sap.m.MessageToast.show(msgSelectStore);
+                  jQuery.sap.delayedCall(500, this, function() {
+                    this.getView().byId("idDDStore").focus();
+                  });
+                  return;
+                }
+                if ( enteredingredient.length === 0 ) {
+                  sap.m.MessageToast.show(msgSelectIngredient);
+                  jQuery.sap.delayedCall(500, this, function() {
+                    this.getView().byId("idDDIngre").focus();
+                  });
+                  return;
+                }
                 firebaseApp = ServiceManager.initFirebase(this);
-                ServiceManager.addIngredientToDatabase(this, firebaseApp);
+                ServiceManager.addIngredientToDatabase(this, firebaseApp);        
+            },
+
+            onIngreComboChange: function(oEvent) {
             },
 
             onHandleRefresh: function(oEvent) {
@@ -114,6 +136,7 @@ sap.ui.define([
                                 db.collection("grocery").doc(groceryID).delete().then(() => {
                                     groceryList.splice(iDirtyRowIndex, 1);
                                     that.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryList);
+                                    //not clear why the below statement would cause duplicate element ID's when adding a new grocery
                                     //oList.removeAggregation("items", oSwipedItem); // Remove this aggregation to delete list item from list
                                     oList.swipeOut(); // we are done, hide the swipeContent from screen        
                                     oGlobalBusyDialog.close();
@@ -128,6 +151,18 @@ sap.ui.define([
                         }
                     });
                 }
+            },
+
+            onSelectedGrocery: function(oEvent) {
+                debugger;
+                if ( oEvent.getSource().getSelected() === true ) {
+                    let groceryListModel = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                    oEvent.getSource().setSelected(false);
+                }
+            },
+
+            onBtnAddBack: function(oEvent) {
+                alert("onBtnAddBack");
             }
         });
     });

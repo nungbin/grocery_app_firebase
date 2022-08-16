@@ -42,6 +42,11 @@
                                     </ComboBox>
                                 </items>
                             </FlexBox>
+                            <FlexBox width="25%" alignItems="End">
+                                <items>
+                                    <Button text="{i18n>addGrocery}" id="idBTNAdd" press=".onBtnAdd"/>
+                                </items>
+                            </FlexBox>
                         </items>
                     </FlexBox>
                 </items>
@@ -141,6 +146,78 @@
                     </Table>
                 </items>
             </FlexBox>
+            <Panel xmlns="sap.m" width="auto" expandable="true" id="panelHistory" class="sapUiResponsiveMargin">
+                <headerToolbar>
+                    <Toolbar id="toolbar1">
+                        <Title text="{i18n>orderHistory}"/>
+                        <ToolbarSpacer/>
+                        <Button icon="sap-icon://settings" visible="false"/>
+                    </Toolbar>
+                </headerToolbar>
+                <content>
+                    <Table noDataText="" 
+                           id="iDtblHistoryGroceryList"
+                           inset="false"
+                           mode="MultiSelect"
+                           items="{
+                             path: 'PGL>/PastGroceryList'
+                           }"
+                    >
+                        <headerToolbar>
+                            <OverflowToolbar>
+                            <content>
+                                <Button text="{i18n>addBackToGrocery}" 
+                                        id="idBTNAddBack" 
+                                        class="sapUiSmallMargin" 
+                                        press=".onBtnAddBack"/>                            
+                            </content>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column id="colHeader1">
+                                <header>
+                                    <Label text="Store" id="header1"/>
+                                </header>
+                            </Column>
+                            <Column id="colHeader2">
+                                <header>
+                                    <Label text="Ingredient" id="header2"/>
+                                </header>
+                            </Column>
+                            <Column id="colHeader3"
+                                    minScreenWidth="Tablet"
+                                    demandPopin="true"
+                            >
+                                <header>
+                                    <Label text="Note/Recipe" id="header3"/>
+                                </header>
+                            </Column>
+                            <Column id="colHeader4"
+                                    minScreenWidth="Tablet"
+                                    demandPopin="true"
+                            >
+                                <header>
+                                    <Label text="Changed On" id="header4"/>
+                                </header>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Active" id="item3">
+                                <cells>
+                                    <Text text="{PGL>Store}"      id="text5"/>
+                                    <Link text="{PGL>Ingredient}" 
+                                          emphasized="true"
+                                          enabled="false"
+                                          id="text6" 
+                                    />
+                                    <Text text="{PGL>Recipe}"     id="text7"/>
+                                    <Text text="{PGL>ChangedOn}"  id="text8" class="smallLabel"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </Panel>
         </content>
     </Page>
 </mvc:View>    
