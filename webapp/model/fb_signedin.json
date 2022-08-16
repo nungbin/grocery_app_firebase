@@ -1,5 +1,6 @@
 {
-    "DDStore":     [],
-    "DDIngre":     [],
-    "GroceryList": []
+    "signedInUser": "",
+    "DDStore":      [],
+    "DDIngre":      [],
+    "GroceryList":  []
 }

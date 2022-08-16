@@ -24,6 +24,7 @@ sap.ui.define([
                 }).bind(this);
 
                 this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+                this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
                 firebaseApp = ServiceManager.initFirebase(this);
             },
 
@@ -38,18 +39,21 @@ sap.ui.define([
     
                 const email = this.getView().byId("idEmail").getValue(),
                       pass  = this.getView().byId("idPassword").getValue();
+                ServiceManager.validateEmailAndPassword(this);
                 const that = this;
 
                 firebaseApp.auth().signInWithEmailAndPassword(email, pass)
                     .then((userCredential) => {
                         // Signed in
                         let user = userCredential.user;
+                        that._signedInModel.setProperty("/signedInUser", user.email);
                         //MessageToast.show(that._i18n.getText("signInGood"));
                         let oRouter = this.getOwnerComponent().getRouter();
                         oGlobalBusyDialog.close();
                         oRouter.navTo("SignedInView");
                     })
                     .catch((error) => {
+                        console.log(error);
                         MessageToast.show(that._i18n.getText("signInBad"));
                         oGlobalBusyDialog.close();
                     });

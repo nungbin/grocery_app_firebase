@@ -1,13 +1,48 @@
 sap.ui.define([
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
-], function(Filter, FilterOperator) {
+    "sap/ui/model/FilterOperator",
+    "sap/m/MessageBox",
+    "sap/m/MessageToast",    
+], function(Filter, FilterOperator, MessageBox, MessageToast) {
 	"use strict";
 
     return {
         initFirebase(controller) {
             const firebaseConfig = controller.getOwnerComponent().getModel("fb_login_m").getData();
             return firebase.initializeApp(firebaseConfig);
+        },
+
+        validateEmailAndPassword(controller) {
+            const email = controller.getView().byId("idEmail").getValue(),
+                  pass  = controller.getView().byId("idPassword").getValue();
+
+            if (!email.length) {
+                //https://sapui5.hana.ondemand.com/#/api/sap.ui.core.ValueState%23properties
+                controller.getView().byId("idEmail").setValueState(sap.ui.core.ValueState.Error);
+                controller.getView().byId("idEmail").setValueStateText(controller._i18n.getText("emptyEmail"));
+                //https://answers.sap.com/questions/424844/how-to-set-focus-textbox-in-sapui5.html
+                jQuery.sap.delayedCall(500, this, function() {
+                    controller.getView().byId("idEmail").focus();
+                });
+                return;
+            }
+            else {
+                controller.getView().byId("idEmail").setValueState(sap.ui.core.ValueState.None);
+                controller.getView().byId("idEmail").setValueStateText("");
+            }
+            if (!pass.length) {
+                //https://sapui5.hana.ondemand.com/#/api/sap.ui.core.ValueState%23properties
+                controller.getView().byId("idPassword").setValueState(sap.ui.core.ValueState.Error);
+                controller.getView().byId("idPassword").setValueStateText(controller._i18n.getText("emptyPass"));
+                //https://answers.sap.com/questions/424844/how-to-set-focus-textbox-in-sapui5.html
+                jQuery.sap.delayedCall(500, this, function() {
+                    controller.getView().byId("idPassword").focus();
+                });
+            }
+            else {
+                controller.getView().byId("idPassword").setValueState(sap.ui.core.ValueState.None);
+                controller.getView().byId("idPassword").setValueStateText("");
+            }
         },
 
         custConcat(...args) {
@@ -97,33 +132,85 @@ sap.ui.define([
             }
             oGlobalBusyDialog.close();            
         },
+
+        _checkIfIngredientExists(controller) {
+            // check if entered ingredient exists
+            const len = controller.byId("idDDIngre").getItems().length;
+            let   enteredingredient = controller.byId("idDDIngre").getValue();
+            for (let i=0 ; i < len ; i++) {
+                const itemText = controller.byId("idDDIngre").getItems()[i].getProperty("text");              
+                if (itemText === enteredingredient) {
+                    return true;
+                }
+            }
+            return false;
+        },
         
         async addIngredientToDatabase(controller, firebaseApp) {
-            const txt = controller._i18n.getText("addingIngre");
-            const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
-            oGlobalBusyDialog.open();
+            const that = this;
+            const oController = controller;
+            const oFirebaseApp = firebaseApp;
+            const enteredIngredient = controller.byId("idDDIngre").getValue();
+            let msgIngre = controller._i18n.getText("missingIngredient");
+            const sTitle = controller._i18n.getText("confirmation");
+            msgIngre = msgIngre.replace("&&", enteredIngredient);
+            if (!this._checkIfIngredientExists(controller)) {
+                debugger;
+                MessageBox.show(msgIngre, {
+                    icon: MessageBox.Icon.QUESTION,
+                    title: sTitle ,
+                    actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                    emphasizedAction: MessageBox.Action.NO,
+                    onClose: function (oAction) {
+                        if (oAction === 'YES') {
+                            const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Adding " + enteredingredient + " to database..."});
+                            oGlobalBusyDialog.open();
+                            //insert ingredient to database
 
-            var   enteredingredient = controller.byId("idDDIngre").getValue();
-            const keyStore  = controller.byId("idDDStore").getSelectedKey(),
-                  storeText = controller.byId("idDDStore").getSelectedItem().getText(),
-                  keyIngre  = controller.byId("idDDIngre").getSelectedKey();
-            let ingreData = controller.getView().byId("page2").getModel("Grocery").getData();
-            const tGrocery = [];
-            const db = firebaseApp.firestore();
-            try {
-                await db.collection("grocery").add({
-                    storeName:  storeText,
-                    ingredient: enteredingredient,
-                    url:        ingreData.DDIngre[keyIngre].url
+                            oGlobalBusyDialog.close();
+                        }
+                    }
                 });
+            }
 
-                await this._getGroceries(controller, firebaseApp);
-            }
-            catch (error) {
-                console.log('Error getting documents', error);
-            }
+            //Confirm to add grocery
+            msgIngre = controller._i18n.getText("confirmAddIngredient");
+            msgIngre = msgIngre.replace("&&", enteredIngredient);
+            MessageBox.show(msgIngre, {
+                icon: MessageBox.Icon.QUESTION,
+                title: sTitle ,
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                emphasizedAction: MessageBox.Action.NO,
+                onClose: async function (oAction) {
+                    if (oAction === 'YES') {
+                        let txt = oController._i18n.getText("addingIngre");
+                        txt = txt.replace("&&", enteredIngredient);
+                        const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+                        oGlobalBusyDialog.open();
             
-            oGlobalBusyDialog.close();
+                        const keyStore  = oController.byId("idDDStore").getSelectedKey(),
+                              storeText = oController.byId("idDDStore").getSelectedItem().getText(),
+                              keyIngre  = oController.byId("idDDIngre").getSelectedKey();
+                        let ingreData = oController.getView().byId("page2").getModel("Grocery").getData();
+                        const db = oFirebaseApp.firestore();
+                        try {
+                            await db.collection("grocery").add({
+                                storeName:    storeText,
+                                ingredient:   enteredIngredient,
+                                url:          ingreData.DDIngre[keyIngre].url,
+                                signedInUser: oController._signedInModel.getProperty("/signedInUser"),
+                                timestamp:    firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            await that._getGroceries(oController, oFirebaseApp);
+                        }
+                        catch (error) {
+                            console.log('Error getting documents', error);
+                        }
+                        
+                        oGlobalBusyDialog.close();
+                    }
+                }
+            });
         },
 
         async _getGroceries(controller, firebaseApp) {
@@ -155,10 +242,18 @@ sap.ui.define([
             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
             oGlobalBusyDialog.open();
 
-            await this._getStores(controller, firebaseApp);
-            await this._getGroceries(controller, firebaseApp);
-
-            oGlobalBusyDialog.close();
+            Promise.all([
+                this._getStores(controller, firebaseApp),
+                this._getGroceries(controller, firebaseApp)
+            ]).then((values) => {
+                oGlobalBusyDialog.close();
+            })
+            .catch((error) => {
+                console.error(error.message)
+                oGlobalBusyDialog.close();
+            });            
+            //await this._getStores(controller, firebaseApp);
+            //await this._getGroceries(controller, firebaseApp);
         }
     }
 })
