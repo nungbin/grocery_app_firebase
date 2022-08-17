@@ -124,7 +124,7 @@
                                     <Input
                                         id="iDTXTRecipe"
                                         placeholder="Enter recipe"
-                                        value="{Recipe}"
+                                        value="{Grocery>Recipe}"
                                         editable="false"
                                         liveChange=".onRecipeChange"
                                         class="sapUiSmallMarginBottom">

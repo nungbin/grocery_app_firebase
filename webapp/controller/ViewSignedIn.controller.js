@@ -153,16 +153,54 @@ sap.ui.define([
                 }
             },
 
+            onGroceryItemEdit: function(oEvent) {
+                // learned from https://plnkr.co/edit/qifky6plPEzFtlpyV2vb?p=preview&preview  
+                const bVisible = oEvent.getSource().getDetailControl().getVisible();
+                this.onPress(oEvent.getSource(), bVisible);
+            },
+
+            onPress: function(oItem, oFlag) {
+                //const oFlag = oItem.getDetailControl().getVisible();
+
+                oItem.getDetailControl().setVisible(!oFlag);
+                var oCells = oItem.getCells();
+                $(oCells).each(function(i) {
+                  var oCell = oCells[i];
+                  if(oCell instanceof sap.m.Input) {
+                    oCell.setEditable(oFlag);
+                  }else if(oCell instanceof sap.m.Select) {
+                    oCell.setEnabled(oFlag);
+                  }else if(oCell instanceof sap.m.Button) {
+                    oCell.setVisible(oFlag);                      
+                  }
+                });
+                debugger;
+            },
+
             onSelectedGrocery: function(oEvent) {
                 debugger;
                 if ( oEvent.getSource().getSelected() === true ) {
+                    const iDirtyRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oEvent.getSource().getParent());
                     let groceryListModel = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+
+                    const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Moving selected grocery to History..."});
+                    oGlobalBusyDialog.open();
+          
+
                     oEvent.getSource().setSelected(false);
                 }
             },
 
             onBtnAddBack: function(oEvent) {
                 alert("onBtnAddBack");
+            },
+
+            onSaveRecipe: function(oEvent) {
+                debugger;
+            },
+
+            onCancelRecipe: function(oEvent) {
+                debugger;
             }
         });
     });

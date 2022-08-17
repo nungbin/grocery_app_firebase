@@ -284,6 +284,7 @@ sap.ui.define([
                     t.Store = doc.data().storeName;
                     t.Ingredient = doc.data().ingredient;
                     t.URL = doc.data().url;
+                    t.Recipe = doc.data().recipe;
                     tGrocery.push(t);
                 });
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", tGrocery);
@@ -294,7 +295,7 @@ sap.ui.define([
         },
 
         async initialLoad(controller, firebaseApp, dialogText) {
-            const that = this;
+            const oController = controller;
             const txt = controller._i18n.getText(dialogText);
             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
             oGlobalBusyDialog.open();
@@ -303,7 +304,7 @@ sap.ui.define([
                 this._getStores(controller, firebaseApp),
                 this._getGroceries(controller, firebaseApp)
             ]).then((values) => {
-                that.getView().byId("idDDIngre").clearSelection();
+                oController.getView().byId("idDDIngre").clearSelection();
                 oGlobalBusyDialog.close();
             })
             .catch((error) => {
