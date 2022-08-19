@@ -1,6 +1,7 @@
 {
-    "signedInUser": "",
-    "DDStore":      [],
-    "DDIngre":      [],
-    "GroceryList":  []
+    "signedInUser":    "",
+    "DDStore":         [],
+    "DDIngre":         [],
+    "GroceryList":     [],
+    "PastGroceryList": []
 }

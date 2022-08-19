@@ -160,7 +160,7 @@
                            inset="false"
                            mode="MultiSelect"
                            items="{
-                             path: 'PGL>/PastGroceryList'
+                             path: 'Grocery>/PastGroceryList'
                            }"
                     >
                         <headerToolbar>
@@ -204,14 +204,14 @@
                         <items>
                             <ColumnListItem type="Active" id="item3">
                                 <cells>
-                                    <Text text="{PGL>Store}"      id="text5"/>
-                                    <Link text="{PGL>Ingredient}" 
+                                    <Text text="{Grocery>Store}"      id="text5"/>
+                                    <Link text="{Grocery>Ingredient}" 
                                           emphasized="true"
                                           enabled="false"
                                           id="text6" 
                                     />
-                                    <Text text="{PGL>Recipe}"     id="text7"/>
-                                    <Text text="{PGL>ChangedOn}"  id="text8" class="smallLabel"/>
+                                    <Text text="{Grocery>Recipe}"     id="text7"/>
+                                    <Text text="{Grocery>timestamp}"  id="text8" class="smallLabel"/>
                                 </cells>
                             </ColumnListItem>
                         </items>

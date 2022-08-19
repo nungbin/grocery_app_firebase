@@ -294,6 +294,108 @@ sap.ui.define([
             }
         },
 
+        deleteGrocery(controller, firebaseApp) {
+            //Confirm to delete grocery
+            const that = controller;
+            const db = firebaseApp.firestore();
+            const sTitle = controller._i18n.getText("confirmation");
+            let msgIngre = controller._i18n.getText("confirmDeleteIngredient");
+            var oList = controller.getView().byId("iDtblGroceryList"); // get the list using its Id
+            const iDirtyRowIndex = oList.indexOfItem(oList.getSwipedItem());
+            let groceryList = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+            let groceryID = groceryList[iDirtyRowIndex].id;
+            msgIngre = msgIngre.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
+            MessageBox.show(msgIngre, {
+                icon: MessageBox.Icon.QUESTION,
+                title: sTitle ,
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                emphasizedAction: MessageBox.Action.NO,
+                onClose: function (oAction) {
+                    if (oAction === 'YES') {
+                        let txt = that._i18n.getText("deletingIngre");
+                        txt = txt.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
+                        const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+                        oGlobalBusyDialog.open();
+            
+                        db.collection("grocery").doc(groceryID).delete().then(() => {
+                            groceryList.splice(iDirtyRowIndex, 1);
+                            that.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryList);
+                            //not clear why the below statement would cause duplicate element ID's when adding a new grocery
+                            //oList.removeAggregation("items", oSwipedItem); // Remove this aggregation to delete list item from list
+                            oList.swipeOut(); // we are done, hide the swipeContent from screen        
+                            oGlobalBusyDialog.close();
+                        }).catch((error) => {
+                            console.error("Error removing document: ", error);
+                            oGlobalBusyDialog.close();
+                        });
+                    }
+                    else {
+                        oList.swipeOut(); // we are done, hide the swipeContent from screen        
+                    }
+                }
+            });
+        },
+
+        async movingGroceryToHistory(controller, firebaseApp, oCheckbox) {
+            const iDirtyRowIndex = controller.getView().byId("iDtblGroceryList").indexOfItem(oCheckbox.getParent());
+            const groceryListModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+            const ingredient = groceryListModel[iDirtyRowIndex];
+            ingredient.signedInUser = controller._signedInModel.getProperty("/signedInUser");
+            ingredient.timestamp    = firebase.firestore.FieldValue.serverTimestamp();
+            const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Moving selected grocery to History..."});
+            oGlobalBusyDialog.open();
+
+            const db = firebaseApp.firestore();
+            try {
+                let tIngre = {};
+                tIngre.id           = ingredient.id;
+                tIngre.ingredient   = ingredient.Ingredient;
+                tIngre.recipe       = ingredient.Recipe;
+                tIngre.signedInUser = ingredient.signedInUser;
+                tIngre.storeName    = ingredient.Store
+                tIngre.url          = ingredient.URL;
+                tIngre.timestamp    = ingredient.timestamp;
+                await db.collection("groceryHistory").add(tIngre);
+                await db.collection("grocery").doc(ingredient.id).delete();
+                groceryListModel.splice(iDirtyRowIndex, 1);
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryListModel);
+                let ingreModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/PastGroceryList");
+                ingreModel.push(ingredient);
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/PastGroceryList", ingreModel);
+                oGlobalBusyDialog.close();
+            }
+            catch (error) {
+                console.log('Error getting documents', error);
+                oGlobalBusyDialog.close();
+            }
+        },
+
+        async _getPastGroceries(controller, firebaseApp) {
+            const tGrocery = [];
+            const db = firebaseApp.firestore();
+
+            try {
+                let i=0;
+                const snapshot = await db.collection("groceryHistory").orderBy("storeName").orderBy("ingredient").get();
+                snapshot.forEach((doc) => {
+                    // doc.data() is never undefined for query doc snapshots
+                    let t = { };
+                    t.id = doc.id;
+                    i++;
+                    t.Store = doc.data().storeName;
+                    t.Ingredient = doc.data().ingredient;
+                    t.URL = doc.data().url;
+                    t.Recipe = doc.data().recipe;
+                    t.timestamp = this._convertFirebaseDateToJSDate(doc.data().timestamp);
+                    tGrocery.push(t);
+                });
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/PastGroceryList", tGrocery);
+            }
+            catch(error) {
+                console.log('Error getting documents', error); 
+            }
+        },
+
         async initialLoad(controller, firebaseApp, dialogText) {
             const oController = controller;
             const txt = controller._i18n.getText(dialogText);
@@ -302,7 +404,8 @@ sap.ui.define([
 
             Promise.all([
                 this._getStores(controller, firebaseApp),
-                this._getGroceries(controller, firebaseApp)
+                this._getGroceries(controller, firebaseApp),
+                this._getPastGroceries(controller, firebaseApp)
             ]).then((values) => {
                 oController.getView().byId("idDDIngre").clearSelection();
                 oGlobalBusyDialog.close();
@@ -313,6 +416,19 @@ sap.ui.define([
             });            
             //await this._getStores(controller, firebaseApp);
             //await this._getGroceries(controller, firebaseApp);
+        },
+
+        _convertFirebaseDateToJSDate(fbDate) {
+            //date from firebase is represented as
+            // let time = {
+            //     seconds: 1613748319,
+            //     nanoseconds: 47688698687,
+            // }            
+            const fireBaseTime = new Date(
+                fbDate.seconds * 1000 + fbDate.nanoseconds / 1000000,
+            );
+            return fireBaseTime.toDateString();
+            //const atTime = fireBaseTime.toLocaleTimeString();            
         }
     }
 })

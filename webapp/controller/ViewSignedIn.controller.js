@@ -105,51 +105,12 @@ sap.ui.define([
             },
 
             onHandleDelete: function(oEvent) {
-                const that = this;
-                const db = firebaseApp.firestore();
-                let groceryList, groceryID;
-
                 //https://sapui5.hana.ondemand.com/sdk/#/topic/a01822c503014bc0bc6e31dfe7906817
                 var oList = this.getView().byId("iDtblGroceryList"); // get the list using its Id
                 var oSwipedItem = oList.getSwipedItem(); // Get which list item is swiped to delete
                 let iDirtyRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oSwipedItem);
                 if (iDirtyRowIndex >= 0) {
-                    groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
-                    groceryID = groceryList[iDirtyRowIndex].id;
-
-                    //Confirm to delete grocery
-                    const sTitle = this._i18n.getText("confirmation");
-                    let msgIngre = this._i18n.getText("confirmDeleteIngredient");
-                    msgIngre = msgIngre.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
-                    MessageBox.show(msgIngre, {
-                        icon: MessageBox.Icon.QUESTION,
-                        title: sTitle ,
-                        actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                        emphasizedAction: MessageBox.Action.NO,
-                        onClose: function (oAction) {
-                            if (oAction === 'YES') {
-                                let txt = that._i18n.getText("deletingIngre");
-                                txt = txt.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
-                                const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
-                                oGlobalBusyDialog.open();
-
-                                db.collection("grocery").doc(groceryID).delete().then(() => {
-                                    groceryList.splice(iDirtyRowIndex, 1);
-                                    that.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryList);
-                                    //not clear why the below statement would cause duplicate element ID's when adding a new grocery
-                                    //oList.removeAggregation("items", oSwipedItem); // Remove this aggregation to delete list item from list
-                                    oList.swipeOut(); // we are done, hide the swipeContent from screen        
-                                    oGlobalBusyDialog.close();
-                                }).catch((error) => {
-                                    console.error("Error removing document: ", error);
-                                    oGlobalBusyDialog.close();
-                                });
-                            }
-                            else {
-                                oList.swipeOut(); // we are done, hide the swipeContent from screen        
-                            }
-                        }
-                    });
+                    ServiceManager.deleteGrocery(this, firebaseApp);
                 }
             },
 
@@ -174,20 +135,32 @@ sap.ui.define([
                     oCell.setVisible(oFlag);                      
                   }
                 });
-                debugger;
             },
 
             onSelectedGrocery: function(oEvent) {
-                debugger;
+                const oCheckBox = oEvent.getSource();
                 if ( oEvent.getSource().getSelected() === true ) {
-                    const iDirtyRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oEvent.getSource().getParent());
-                    let groceryListModel = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
-
-                    const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Moving selected grocery to History..."});
-                    oGlobalBusyDialog.open();
-          
-
-                    oEvent.getSource().setSelected(false);
+                    const that = this;
+                    const sTitle = this._i18n.getText("confirmation");
+                    let msgIngre = this._i18n.getText("confirmMoveIngredient");
+                    var oList = this.getView().byId("iDtblGroceryList"); // get the list using its Id
+                    const iDirtyRowIndex = oList.indexOfItem(oEvent.getSource().getParent());
+                    let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                    msgIngre = msgIngre.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
+                    MessageBox.show(msgIngre, {
+                        icon: MessageBox.Icon.QUESTION,
+                        title: sTitle ,
+                        actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                        emphasizedAction: MessageBox.Action.NO,
+                        onClose: function (oAction) {
+                            if (oAction === 'YES') {
+                                ServiceManager.movingGroceryToHistory(that, firebaseApp,oCheckBox);
+                            }
+                            else {
+                                oCheckBox.setSelected(false);
+                            }
+                        }
+                    });                    
                 }
             },
 
