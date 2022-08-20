@@ -133,11 +133,13 @@
                                             type="Transparent" 
                                             visible="false"
                                             icon="sap-icon://save"
+                                            tooltip="{i18n>saveRecipe}"
                                             press=".onSaveRecipe"/>
                                     <Button 
                                             type="Transparent" 
                                             visible="false"
                                             icon="sap-icon://cancel"
+                                            tooltip="{i18n>cancelRecipe}"
                                             press=".onCancelRecipe"/>
                                     <Text text="{UID}" id="iDUID"/>
                                 </cells>
@@ -146,7 +148,7 @@
                     </Table>
                 </items>
             </FlexBox>
-            <Panel xmlns="sap.m" width="auto" expandable="true" id="panelHistory" class="sapUiResponsiveMargin">
+            <Panel xmlns="sap.m" width="auto" expandable="true" id="idPanelHistory" class="sapUiResponsiveMargin">
                 <headerToolbar>
                     <Toolbar id="toolbar1">
                         <Title text="{i18n>orderHistory}"/>
@@ -189,7 +191,8 @@
                                     demandPopin="true"
                             >
                                 <header>
-                                    <Label text="Note/Recipe" id="header3"/>
+                                    <Label text="Note/Recipe" 
+                                           id="header3"/>
                                 </header>
                             </Column>
                             <Column id="colHeader4"
@@ -210,8 +213,15 @@
                                           enabled="false"
                                           id="text6" 
                                     />
-                                    <Text text="{Grocery>Recipe}"     id="text7"/>
-                                    <Text text="{Grocery>timestamp}"  id="text8" class="smallLabel"/>
+                                    <Text text="{Grocery>Recipe}"     
+                                          visible="{= ${Grocery>Recipe} === '' ? false : true }"
+                                          id="text7"/>
+                                    <Text text="{ parts: [ 'Grocery>timestamp'
+                                                         ],
+                                                  formatter: '.formatter.convertFirebaseDateToJSDate'
+                                                }"
+                                          id="text8" 
+                                          class="smallLabel"/>
                                 </cells>
                             </ColumnListItem>
                         </items>

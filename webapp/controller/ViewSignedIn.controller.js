@@ -4,16 +4,19 @@ sap.ui.define([
     "sap/ui/core/Fragment",
     "sap/m/MessageBox",
     "sap/m/MessageToast",     
-    "../service/ServiceManager"
+    "../service/ServiceManager",
+    "../model/formatter"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (MessageToast, Controller, Fragment, MessageBox, Messagetoast, ServiceManager) {
+    function (MessageToast, Controller, Fragment, MessageBox, Messagetoast, ServiceManager, formatter) {
         "use strict";
         let firebaseApp, db;
 
         return Controller.extend("groceryappfb.controller.View1", {
+            formatter: formatter,
+            
             onInit: function() {
                 this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
@@ -114,29 +117,6 @@ sap.ui.define([
                 }
             },
 
-            onGroceryItemEdit: function(oEvent) {
-                // learned from https://plnkr.co/edit/qifky6plPEzFtlpyV2vb?p=preview&preview  
-                const bVisible = oEvent.getSource().getDetailControl().getVisible();
-                this.onPress(oEvent.getSource(), bVisible);
-            },
-
-            onPress: function(oItem, oFlag) {
-                //const oFlag = oItem.getDetailControl().getVisible();
-
-                oItem.getDetailControl().setVisible(!oFlag);
-                var oCells = oItem.getCells();
-                $(oCells).each(function(i) {
-                  var oCell = oCells[i];
-                  if(oCell instanceof sap.m.Input) {
-                    oCell.setEditable(oFlag);
-                  }else if(oCell instanceof sap.m.Select) {
-                    oCell.setEnabled(oFlag);
-                  }else if(oCell instanceof sap.m.Button) {
-                    oCell.setVisible(oFlag);                      
-                  }
-                });
-            },
-
             onSelectedGrocery: function(oEvent) {
                 const oCheckBox = oEvent.getSource();
                 if ( oEvent.getSource().getSelected() === true ) {
@@ -154,7 +134,8 @@ sap.ui.define([
                         emphasizedAction: MessageBox.Action.NO,
                         onClose: function (oAction) {
                             if (oAction === 'YES') {
-                                ServiceManager.movingGroceryToHistory(that, firebaseApp,oCheckBox);
+                                ServiceManager.movingGroceryToHistory(that, firebaseApp, oCheckBox);
+                                oCheckBox.setSelected(false);
                             }
                             else {
                                 oCheckBox.setSelected(false);
@@ -164,8 +145,22 @@ sap.ui.define([
                 }
             },
 
+            onGroceryItemEdit: function(oEvent) {
+                // learned from https://plnkr.co/edit/qifky6plPEzFtlpyV2vb?p=preview&preview  
+                const bVisible = oEvent.getSource().getDetailControl().getVisible();
+                ServiceManager.onPress(oEvent.getSource(), bVisible);
+            },
+
             onBtnAddBack: function(oEvent) {
                 alert("onBtnAddBack");
+            },
+
+            onRecipeChange: function(oEvent) {
+                const iDirtyRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oEvent.getSource().getParent());
+                let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                groceryList[iDirtyRowIndex].dirtyRow = true;
+                groceryList[iDirtyRowIndex].dirtyRecipe = oEvent.getSource().getValue();
+                groceryList[iDirtyRowIndex].originalRecipe = groceryList[iDirtyRowIndex].Recipe;
             },
 
             onSaveRecipe: function(oEvent) {
@@ -173,7 +168,79 @@ sap.ui.define([
             },
 
             onCancelRecipe: function(oEvent) {
-                debugger;
+                const that = this;
+                const sTitle = this._i18n.getText("confirmation");
+                const oObject = oEvent.getSource();
+                let msgIngre = this._i18n.getText("unsavedRecipe");
+                let bDirty = false;
+                let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                groceryList.forEach((grocery, i) => {
+                    if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                        bDirty = true;
+                    }
+                })
+                if (bDirty === true) {
+                    sap.m.MessageBox.confirm(msgIngre, {
+                        icon: MessageBox.Icon.QUESTION,
+                        title: sTitle ,
+                        actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                        emphasizedAction: MessageBox.Action.NO,
+                        onClose: function(oAction) {
+                          if (oAction === 'YES') {
+                            const txt = that._i18n.getText("savingRecipe");
+                            const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+                            oGlobalBusyDialog.open();
+                            Promise.all(groceryList.map(function(grocery, i) {
+                                const oItem = oObject.getParent().getParent().getItems()[i];
+                                if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                                    return ServiceManager.saveRecipe(that, firebaseApp, grocery);
+                                }
+                            })).then(function(res) {
+                                that._resetRecipeFields(oObject, groceryList);
+                                oGlobalBusyDialog.close();
+                                //that.setRecipeInput(oEvent, true);
+                            })
+                          }
+                          else {
+                            that._resetRecipeFields(oObject, groceryList);
+                          }             
+                        }
+                    });            
+                }
+                else {
+                    ServiceManager.onPress(oObject.getParent(), oObject.getParent().getDetailControl().getVisible());
+                }
+            },
+
+            _resetRecipeFields: function(oObject, groceryList) {
+                groceryList.forEach((grocery, i) => {
+                    if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                        const oItem = oObject.getParent().getParent().getItems()[i];
+                        const bVisible = oItem.getDetailControl().getVisible();  
+                        groceryList[i].dirtyRow = bVisible;
+                        groceryList[i].dirtyRecipe = "";
+                        oItem.getCells()[3].setValue(groceryList[i].originalRecipe);
+                        groceryList[i].originalRecipe = "";
+                        ServiceManager.onPress(oItem, bVisible);
+                    }
+                })
+            },
+
+            _onPress: function(oItem, oFlag) {
+                //const oFlag = oItem.getDetailControl().getVisible();
+
+                oItem.getDetailControl().setVisible(!oFlag);
+                var oCells = oItem.getCells();
+                $(oCells).each(function(i) {
+                  var oCell = oCells[i];
+                  if (oCell instanceof sap.m.Input) {
+                    oCell.setEditable(oFlag);
+                  }else if (oCell instanceof sap.m.Select) {
+                    oCell.setEnabled(oFlag);
+                  }else if (oCell instanceof sap.m.Button) {
+                    oCell.setVisible(oFlag);                      
+                  }
+                });
             }
         });
     });

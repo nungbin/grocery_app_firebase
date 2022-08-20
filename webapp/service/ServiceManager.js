@@ -342,25 +342,29 @@ sap.ui.define([
             const ingredient = groceryListModel[iDirtyRowIndex];
             ingredient.signedInUser = controller._signedInModel.getProperty("/signedInUser");
             ingredient.timestamp    = firebase.firestore.FieldValue.serverTimestamp();
-            const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Moving selected grocery to History..."});
+            const txt = this._i18n.getText("movingGroceryToHistory");
+            const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
             oGlobalBusyDialog.open();
 
             const db = firebaseApp.firestore();
             try {
                 let tIngre = {};
-                tIngre.id           = ingredient.id;
+                //tIngre.id           = ingredient.id;
                 tIngre.ingredient   = ingredient.Ingredient;
                 tIngre.recipe       = ingredient.Recipe;
                 tIngre.signedInUser = ingredient.signedInUser;
                 tIngre.storeName    = ingredient.Store
                 tIngre.url          = ingredient.URL;
-                tIngre.timestamp    = ingredient.timestamp;
-                await db.collection("groceryHistory").add(tIngre);
+                tIngre.timestamp    = firebase.firestore.FieldValue.serverTimestamp();
+                //https://stackoverflow.com/questions/48541270/how-to-add-document-with-custom-id-to-firestore
+                await db.collection("groceryHistory").add(tIngre).then(doc => {
+                    tIngre.id = doc.id;
+                });
                 await db.collection("grocery").doc(ingredient.id).delete();
                 groceryListModel.splice(iDirtyRowIndex, 1);
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryListModel);
                 let ingreModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/PastGroceryList");
-                ingreModel.push(ingredient);
+                ingreModel.unshift(ingredient);
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/PastGroceryList", ingreModel);
                 oGlobalBusyDialog.close();
             }
@@ -370,13 +374,28 @@ sap.ui.define([
             }
         },
 
+        async saveRecipe(controller, firebaseApp, grocery) {
+            const db = firebaseApp.firestore();
+            try {
+                const snapshot = await db.collection("grocery")
+                                         .doc(grocery.id)
+                                         .update({
+                                             recipe:    grocery.dirtyRecipe,
+                                             timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                                         });
+            }
+            catch(error) {
+                console.log('Error getting documents', error); 
+            }
+        },
+
         async _getPastGroceries(controller, firebaseApp) {
             const tGrocery = [];
             const db = firebaseApp.firestore();
 
             try {
                 let i=0;
-                const snapshot = await db.collection("groceryHistory").orderBy("storeName").orderBy("ingredient").get();
+                const snapshot = await db.collection("groceryHistory").orderBy("storeName").orderBy("ingredient").orderBy("timestamp", "desc").limit(20).get();
                 snapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
                     let t = { };
@@ -386,7 +405,8 @@ sap.ui.define([
                     t.Ingredient = doc.data().ingredient;
                     t.URL = doc.data().url;
                     t.Recipe = doc.data().recipe;
-                    t.timestamp = this._convertFirebaseDateToJSDate(doc.data().timestamp);
+                    //t.timestamp = this._convertFirebaseDateToJSDate(doc.data().timestamp);
+                    t.timestamp = doc.data().timestamp;
                     tGrocery.push(t);
                 });
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/PastGroceryList", tGrocery);
@@ -397,6 +417,7 @@ sap.ui.define([
         },
 
         async initialLoad(controller, firebaseApp, dialogText) {
+            const that = this;
             const oController = controller;
             const txt = controller._i18n.getText(dialogText);
             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
@@ -407,15 +428,45 @@ sap.ui.define([
                 this._getGroceries(controller, firebaseApp),
                 this._getPastGroceries(controller, firebaseApp)
             ]).then((values) => {
+                oController.getView().byId("idPanelHistory").setExpanded(false);
                 oController.getView().byId("idDDIngre").clearSelection();
+                that._resetGroceryListView(oController);
                 oGlobalBusyDialog.close();
             })
             .catch((error) => {
-                console.error(error.message)
+                console.error(error.message);
                 oGlobalBusyDialog.close();
             });            
             //await this._getStores(controller, firebaseApp);
             //await this._getGroceries(controller, firebaseApp);
+        },
+
+        onPress(oItem, oFlag) {
+            //const oFlag = oItem.getDetailControl().getVisible();
+
+            try {
+                oItem.getDetailControl().setVisible(!oFlag);
+            }
+            catch (error) {
+            }
+            var oCells = oItem.getCells();
+            $(oCells).each(function(i) {
+              var oCell = oCells[i];
+              if (oCell instanceof sap.m.Input) {
+                oCell.setEditable(oFlag);
+              }else if (oCell instanceof sap.m.Select) {
+                oCell.setEnabled(oFlag);
+              }else if (oCell instanceof sap.m.Button) {
+                oCell.setVisible(oFlag);                      
+              }
+            });
+        },
+
+        _resetGroceryListView(controller) {
+            var oItems = controller.getView().byId("iDtblGroceryList").getItems();
+            oItems.forEach((oItem) => {
+                this.onPress(oItem, false);
+            })
         },
 
         _convertFirebaseDateToJSDate(fbDate) {
