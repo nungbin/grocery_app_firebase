@@ -285,6 +285,7 @@ sap.ui.define([
                     t.Ingredient = doc.data().ingredient;
                     t.URL = doc.data().url;
                     t.Recipe = doc.data().recipe;
+                    t.originalRecipe = t.Recipe;
                     tGrocery.push(t);
                 });
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", tGrocery);
@@ -383,6 +384,7 @@ sap.ui.define([
                                              recipe:    grocery.dirtyRecipe,
                                              timestamp: firebase.firestore.FieldValue.serverTimestamp()
                                          });
+                grocery.originalRecipe = grocery.dirtyRecipe;
             }
             catch(error) {
                 console.log('Error getting documents', error); 
@@ -430,7 +432,7 @@ sap.ui.define([
             ]).then((values) => {
                 oController.getView().byId("idPanelHistory").setExpanded(false);
                 oController.getView().byId("idDDIngre").clearSelection();
-                that._resetGroceryListView(oController);
+                that.resetGroceryListView(oController);
                 oGlobalBusyDialog.close();
             })
             .catch((error) => {
@@ -441,9 +443,18 @@ sap.ui.define([
             //await this._getGroceries(controller, firebaseApp);
         },
 
+        checkIfDirtyRecipeEdit(controller) {
+            let groceryList = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+            groceryList.forEach((grocery, i) => {
+                if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                    return true;
+                }
+            })
+            return false;
+        },
+
         onPress(oItem, oFlag) {
             //const oFlag = oItem.getDetailControl().getVisible();
-
             try {
                 oItem.getDetailControl().setVisible(!oFlag);
             }
@@ -462,7 +473,21 @@ sap.ui.define([
             });
         },
 
-        _resetGroceryListView(controller) {
+        resetRecipeFields(oObject, groceryList) {
+            groceryList.forEach((grocery, i) => {
+                if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                    const oItem = oObject.getParent().getParent().getItems()[i];
+                    const bVisible = oItem.getDetailControl().getVisible();  
+                    groceryList[i].dirtyRow = bVisible;
+                    groceryList[i].dirtyRecipe = "";
+                    oItem.getCells()[3].setValue(groceryList[i].originalRecipe);
+                    groceryList[i].originalRecipe = "";
+                }
+            })
+        },
+
+        resetGroceryListView(controller) {
+            controller.getView().byId("iDtblGroceryList").swipeOut(); // we are done, hide the swipeContent from screen        
             var oItems = controller.getView().byId("iDtblGroceryList").getItems();
             oItems.forEach((oItem) => {
                 this.onPress(oItem, false);

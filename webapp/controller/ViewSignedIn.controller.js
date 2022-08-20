@@ -70,9 +70,6 @@ sap.ui.define([
                 ServiceManager.addIngredientToDatabase(this, firebaseApp);        
             },
 
-            onIngreComboChange: function(oEvent) {
-            },
-
             onHandleRefresh: function(oEvent) {
                 ServiceManager.initialLoad(this, firebaseApp, "initialLoad");
                 oEvent.getSource().hide();
@@ -160,11 +157,24 @@ sap.ui.define([
                 let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
                 groceryList[iDirtyRowIndex].dirtyRow = true;
                 groceryList[iDirtyRowIndex].dirtyRecipe = oEvent.getSource().getValue();
-                groceryList[iDirtyRowIndex].originalRecipe = groceryList[iDirtyRowIndex].Recipe;
             },
 
             onSaveRecipe: function(oEvent) {
-                debugger;
+                const that = this;
+                const oObject = oEvent.getSource();
+                let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                const txt = this._i18n.getText("savingRecipe");
+                const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+                oGlobalBusyDialog.open();
+                Promise.all(groceryList.map(function(grocery, i) {
+                    if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                        return ServiceManager.saveRecipe(that, firebaseApp, grocery);
+                    }
+                })).then(function(res) {
+                    ServiceManager.resetRecipeFields(oObject, groceryList);
+                    ServiceManager.resetGroceryListView(that);
+                    oGlobalBusyDialog.close();
+                })
             },
 
             onCancelRecipe: function(oEvent) {
@@ -172,13 +182,8 @@ sap.ui.define([
                 const sTitle = this._i18n.getText("confirmation");
                 const oObject = oEvent.getSource();
                 let msgIngre = this._i18n.getText("unsavedRecipe");
-                let bDirty = false;
                 let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
-                groceryList.forEach((grocery, i) => {
-                    if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
-                        bDirty = true;
-                    }
-                })
+                const bDirty = ServiceManager.checkIfDirtyRecipeEdit(this);
                 if (bDirty === true) {
                     sap.m.MessageBox.confirm(msgIngre, {
                         icon: MessageBox.Icon.QUESTION,
@@ -191,39 +196,29 @@ sap.ui.define([
                             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
                             oGlobalBusyDialog.open();
                             Promise.all(groceryList.map(function(grocery, i) {
-                                const oItem = oObject.getParent().getParent().getItems()[i];
                                 if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
                                     return ServiceManager.saveRecipe(that, firebaseApp, grocery);
                                 }
                             })).then(function(res) {
-                                that._resetRecipeFields(oObject, groceryList);
+                                ServiceManager.resetRecipeFields(oObject, groceryList);
+                                ServiceManager.resetGroceryListView(that);
                                 oGlobalBusyDialog.close();
-                                //that.setRecipeInput(oEvent, true);
                             })
                           }
                           else {
-                            that._resetRecipeFields(oObject, groceryList);
-                          }             
+                            ServiceManager.resetRecipeFields(oObject, groceryList);
+                            ServiceManager.resetGroceryListView(that);
+                          }
+                          return;             
                         }
                     });            
                 }
                 else {
-                    ServiceManager.onPress(oObject.getParent(), oObject.getParent().getDetailControl().getVisible());
+                    ServiceManager.resetRecipeFields(oObject, groceryList);
+                    ServiceManager.resetGroceryListView(that);
+                    return;
                 }
-            },
-
-            _resetRecipeFields: function(oObject, groceryList) {
-                groceryList.forEach((grocery, i) => {
-                    if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
-                        const oItem = oObject.getParent().getParent().getItems()[i];
-                        const bVisible = oItem.getDetailControl().getVisible();  
-                        groceryList[i].dirtyRow = bVisible;
-                        groceryList[i].dirtyRecipe = "";
-                        oItem.getCells()[3].setValue(groceryList[i].originalRecipe);
-                        groceryList[i].originalRecipe = "";
-                        ServiceManager.onPress(oItem, bVisible);
-                    }
-                })
+                
             },
 
             _onPress: function(oItem, oFlag) {
