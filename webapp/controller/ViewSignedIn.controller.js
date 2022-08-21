@@ -119,7 +119,7 @@ sap.ui.define([
                 if ( oEvent.getSource().getSelected() === true ) {
                     const that = this;
                     const sTitle = this._i18n.getText("confirmation");
-                    let msgIngre = this._i18n.getText("confirmMoveIngredient");
+                    let msgIngre = this._i18n.getText("confirmMoveGrocery");
                     var oList = this.getView().byId("iDtblGroceryList"); // get the list using its Id
                     const iDirtyRowIndex = oList.indexOfItem(oEvent.getSource().getParent());
                     let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
@@ -138,7 +138,7 @@ sap.ui.define([
                                 oCheckBox.setSelected(false);
                             }
                         }
-                    });                    
+                    });
                 }
             },
 
@@ -149,7 +149,27 @@ sap.ui.define([
             },
 
             onBtnAddBack: function(oEvent) {
-                alert("onBtnAddBack");
+                const that = this;
+                const sTitle = this._i18n.getText("confirmation");
+                let msgIngre = this._i18n.getText("confirmMoveGroceryBack");
+                const oTable = this.getView().byId("iDtblHistoryGroceryList");
+                const oItems = oTable.getSelectedItems();
+                if (oItems.length > 0) {
+                    MessageBox.show(msgIngre, {
+                        icon: MessageBox.Icon.QUESTION,
+                        title: sTitle ,
+                        actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                        emphasizedAction: MessageBox.Action.NO,
+                        onClose: function (oAction) {
+                            if (oAction === 'YES') {
+                                ServiceManager.movingHistoryGroceryBack(that, firebaseApp);
+                            }
+                            that.getView().byId("iDtblGroceryList").removeSelections(true);
+                            that.getView().byId("iDtblHistoryGroceryList").removeSelections(true);
+                            that.getView().byId("idPanelHistory").setExpanded(false);                            
+                        }
+                    });
+                }
             },
 
             onRecipeChange: function(oEvent) {

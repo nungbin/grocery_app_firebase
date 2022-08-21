@@ -343,7 +343,7 @@ sap.ui.define([
             const ingredient = groceryListModel[iDirtyRowIndex];
             ingredient.signedInUser = controller._signedInModel.getProperty("/signedInUser");
             ingredient.timestamp    = firebase.firestore.FieldValue.serverTimestamp();
-            const txt = this._i18n.getText("movingGroceryToHistory");
+            const txt = controller._i18n.getText("movingGroceryToHistory");
             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
             oGlobalBusyDialog.open();
 
@@ -372,6 +372,59 @@ sap.ui.define([
             catch (error) {
                 console.log('Error getting documents', error);
                 oGlobalBusyDialog.close();
+            }
+        },
+
+        movingHistoryGroceryBack(controller, firebaseApp) {
+            const that = this;
+            const oController = controller;
+            const oFirebaseApp = firebaseApp;
+            const oTable = controller.getView().byId("iDtblHistoryGroceryList");
+            const oItems = oTable.getSelectedItems();
+            const PGLModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/PastGroceryList");
+            const txt = controller._i18n.getText("movingHistoryGroceryBack");
+            const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
+            oGlobalBusyDialog.open();
+
+            try {
+                //https://dev.to/jamesliudotcc/how-to-use-async-await-with-map-and-promise-all-1gb5
+                Promise.all(oItems.map((oItem) => {
+                    const iDirtyRowIndex = oTable.indexOfItem(oItem);
+                    const grocery = PGLModel[iDirtyRowIndex];
+                    return that._movingHistoryGroceryBack(oController, oFirebaseApp, grocery);
+                })).then(function(res) {
+                    oGlobalBusyDialog.close();
+                })
+            }
+            catch (error) {
+            }
+        },
+
+        async _movingHistoryGroceryBack(controller, firebaseApp, grocery) {
+            const db = firebaseApp.firestore();
+            try {
+                const tID = db.collection("grocery").add({
+                    storeName:    grocery.Store,
+                    ingredient:   grocery.Ingredient,
+                    recipe:       grocery.Recipe,
+                    url:          grocery.URL,
+                    signedInUser: controller._signedInModel.getProperty("/signedInUser"),
+                    timestamp:    firebase.firestore.FieldValue.serverTimestamp()
+                });
+                let glModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                let tGL = {
+                    id:         tID,
+                    Store:      grocery.Store,
+                    Ingredient: grocery.Ingredient,
+                    URL:        grocery.URL,
+                    signedInUser: controller._signedInModel.getProperty("/signedInUser"),
+                    timestamp:    firebase.firestore.FieldValue.serverTimestamp()
+                }
+                glModel.push(tGL);
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", glModel);
+            }
+            catch (error) {
+                console.log(error);
             }
         },
 
