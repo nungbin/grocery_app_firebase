@@ -286,6 +286,7 @@ sap.ui.define([
                     t.URL = doc.data().url;
                     t.Recipe = doc.data().recipe;
                     t.originalRecipe = t.Recipe;
+                    t.dirtyRecipe = "";
                     tGrocery.push(t);
                 });
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", tGrocery);
@@ -413,12 +414,15 @@ sap.ui.define([
                 });
                 let glModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
                 let tGL = {
-                    id:         tID,
-                    Store:      grocery.Store,
-                    Ingredient: grocery.Ingredient,
-                    URL:        grocery.URL,
-                    signedInUser: controller._signedInModel.getProperty("/signedInUser"),
-                    timestamp:    firebase.firestore.FieldValue.serverTimestamp()
+                    id:             tID,
+                    Store:          grocery.Store,
+                    Ingredient:     grocery.Ingredient,
+                    URL:            grocery.URL,
+                    Recipe:         grocery.Recipe,
+                    originalRecipe: grocery.Recipe,
+                    dirtyRecipe:    "",
+                    signedInUser:   controller._signedInModel.getProperty("/signedInUser"),
+                    timestamp:      firebase.firestore.FieldValue.serverTimestamp()
                 }
                 glModel.push(tGL);
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", glModel);
@@ -428,16 +432,20 @@ sap.ui.define([
             }
         },
 
-        async saveRecipe(controller, firebaseApp, grocery) {
+        async saveRecipe(controller, firebaseApp, iIndex) {
             const db = firebaseApp.firestore();
+            let groceryList = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+            let grocery = groceryList[iIndex];
             try {
                 const snapshot = await db.collection("grocery")
                                          .doc(grocery.id)
                                          .update({
-                                             recipe:    grocery.dirtyRecipe,
+                                             recipe:    groceryList[iIndex].dirtyRecipe,
                                              timestamp: firebase.firestore.FieldValue.serverTimestamp()
                                          });
-                grocery.originalRecipe = grocery.dirtyRecipe;
+                groceryList[iIndex].Recipe = groceryList[iIndex].dirtyRecipe;
+                groceryList[iIndex].originalRecipe = groceryList[iIndex].Recipe;
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryList);
             }
             catch(error) {
                 console.log('Error getting documents', error); 
@@ -485,6 +493,7 @@ sap.ui.define([
             ]).then((values) => {
                 oController.getView().byId("idPanelHistory").setExpanded(false);
                 oController.getView().byId("idDDIngre").clearSelection();
+                oController.getView().byId("idDDIngre").setValue(null);
                 that.resetGroceryListView(oController);
                 oGlobalBusyDialog.close();
             })
@@ -499,7 +508,7 @@ sap.ui.define([
         checkIfDirtyRecipeEdit(controller) {
             let groceryList = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
             groceryList.forEach((grocery, i) => {
-                if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                if (grocery.dirtyRecipe.length > 0) {
                     return true;
                 }
             })
@@ -528,13 +537,10 @@ sap.ui.define([
 
         resetRecipeFields(oObject, groceryList) {
             groceryList.forEach((grocery, i) => {
-                if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
+                if (grocery.dirtyRecipe.length > 0) {
                     const oItem = oObject.getParent().getParent().getItems()[i];
-                    const bVisible = oItem.getDetailControl().getVisible();  
-                    groceryList[i].dirtyRow = bVisible;
                     groceryList[i].dirtyRecipe = "";
                     oItem.getCells()[3].setValue(groceryList[i].originalRecipe);
-                    groceryList[i].originalRecipe = "";
                 }
             })
         },

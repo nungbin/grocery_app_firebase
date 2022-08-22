@@ -175,7 +175,6 @@ sap.ui.define([
             onRecipeChange: function(oEvent) {
                 const iDirtyRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oEvent.getSource().getParent());
                 let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
-                groceryList[iDirtyRowIndex].dirtyRow = true;
                 groceryList[iDirtyRowIndex].dirtyRecipe = oEvent.getSource().getValue();
             },
 
@@ -187,8 +186,8 @@ sap.ui.define([
                 const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
                 oGlobalBusyDialog.open();
                 Promise.all(groceryList.map(function(grocery, i) {
-                    if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
-                        return ServiceManager.saveRecipe(that, firebaseApp, grocery);
+                    if (grocery.dirtyRecipe.length > 0) {
+                        return ServiceManager.saveRecipe(that, firebaseApp, i);
                     }
                 })).then(function(res) {
                     ServiceManager.resetRecipeFields(oObject, groceryList);
@@ -216,8 +215,8 @@ sap.ui.define([
                             const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
                             oGlobalBusyDialog.open();
                             Promise.all(groceryList.map(function(grocery, i) {
-                                if (grocery.dirtyRow !== undefined && grocery.dirtyRow === true) {
-                                    return ServiceManager.saveRecipe(that, firebaseApp, grocery);
+                                if (grocery.dirtyRecipe.length > 0) {
+                                    return ServiceManager.saveRecipe(that, firebaseApp, i);
                                 }
                             })).then(function(res) {
                                 ServiceManager.resetRecipeFields(oObject, groceryList);
@@ -238,7 +237,6 @@ sap.ui.define([
                     ServiceManager.resetGroceryListView(that);
                     return;
                 }
-                
             },
 
             _onPress: function(oItem, oFlag) {
