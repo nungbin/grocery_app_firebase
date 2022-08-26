@@ -5,6 +5,8 @@ sap.ui.define([
     "sap/m/MessageToast",    
 ], function(Filter, FilterOperator, MessageBox, MessageToast) {
 	"use strict";
+    const sUsername = "username";
+    const sPassword = "password";
 
     return {
         initFirebase(controller) {
@@ -13,9 +15,36 @@ sap.ui.define([
         },
 
         initPass(controller) {
-            const passModel = controller.getOwnerComponent().getModel("pass_m").getData();
-            controller.getView().byId("idEmail").setValue(passModel.email);
-            controller.getView().byId("idPassword").setValue(passModel.pass);
+            //const passModel = controller.getOwnerComponent().getModel("pass_m").getData();
+            const oResult = this.getUserAndPass();
+
+            try {
+                if (oResult.username.length !== 0) {
+                    controller.getView().byId("idEmail").setValue(oResult.username);
+                } 
+                if (oResult.password.length !== 0) {
+                    controller.getView().byId("idPassword").setValue(oResult.password);
+                }    
+            }
+            catch (error) {
+                oResult.username = "";
+                oResult.password = "";
+            }
+        },
+
+        getUserAndPass() {
+            let oResult = {
+                username: "",
+                password: ""
+            }
+            oResult.username = localStorage.getItem(sUsername);
+            oResult.password = localStorage.getItem(sPassword);
+            return oResult;
+        },
+
+        setUserAndPass(pUsername, pPassword) {
+            localStorage.setItem(sUsername, pUsername);
+            localStorage.setItem(sPassword, pPassword);
         },
 
         validateEmailAndPassword(controller) {
@@ -30,24 +59,26 @@ sap.ui.define([
                 jQuery.sap.delayedCall(500, this, function() {
                     controller.getView().byId("idEmail").focus();
                 });
-                return;
+                return false;
             }
             else {
                 controller.getView().byId("idEmail").setValueState(sap.ui.core.ValueState.None);
                 controller.getView().byId("idEmail").setValueStateText("");
-            }
-            if (!pass.length) {
-                //https://sapui5.hana.ondemand.com/#/api/sap.ui.core.ValueState%23properties
-                controller.getView().byId("idPassword").setValueState(sap.ui.core.ValueState.Error);
-                controller.getView().byId("idPassword").setValueStateText(controller._i18n.getText("emptyPass"));
-                //https://answers.sap.com/questions/424844/how-to-set-focus-textbox-in-sapui5.html
-                jQuery.sap.delayedCall(500, this, function() {
-                    controller.getView().byId("idPassword").focus();
-                });
-            }
-            else {
-                controller.getView().byId("idPassword").setValueState(sap.ui.core.ValueState.None);
-                controller.getView().byId("idPassword").setValueStateText("");
+                if (!pass.length) {
+                    //https://sapui5.hana.ondemand.com/#/api/sap.ui.core.ValueState%23properties
+                    controller.getView().byId("idPassword").setValueState(sap.ui.core.ValueState.Error);
+                    controller.getView().byId("idPassword").setValueStateText(controller._i18n.getText("emptyPass"));
+                    //https://answers.sap.com/questions/424844/how-to-set-focus-textbox-in-sapui5.html
+                    jQuery.sap.delayedCall(500, this, function() {
+                        controller.getView().byId("idPassword").focus();
+                    });
+                    return false;
+                }
+                else {
+                    controller.getView().byId("idPassword").setValueState(sap.ui.core.ValueState.None);
+                    controller.getView().byId("idPassword").setValueStateText("");
+                    return true;
+                }    
             }
         },
 
