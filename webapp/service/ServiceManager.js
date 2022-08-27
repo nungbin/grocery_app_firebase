@@ -538,11 +538,11 @@ sap.ui.define([
 
         checkIfDirtyRecipeEdit(controller) {
             let groceryList = controller.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
-            groceryList.forEach((grocery, i) => {
-                if (grocery.dirtyRecipe.length > 0) {
+            for (let i=0;i<groceryList.length;i++) {
+                if (groceryList[i].dirtyRecipe.length > 0) {
                     return true;
                 }
-            })
+            }
             return false;
         },
 
