@@ -6,7 +6,7 @@
 // Released under the MIT license: http://jsbin.mit-license.org
 sap.ui.define(["sap/ui/core/Control"], function(Control) {
 	"use strict";
-	return Control.extend("groceryappfb.control.CustomDropdown", {
+	return Control.extend("DemoCustomControl.control.CustomDropdown", {
         metadata: {
             properties : {
                 placeholder: {type : "string", defaultValue : ""}
@@ -87,13 +87,12 @@ sap.ui.define(["sap/ui/core/Control"], function(Control) {
         },
 
         _openPopover: function() {
-            if (this._oList !== undefined) {
-                this._oList.destroy();
-                this._oList = undefined;
+            if (this._oList === undefined) {
+                this._oList = new sap.m.List({
+                    noDataText:       "Please enter a store and click on Add to add a store."
+                });    
             }
-            this._oList = new sap.m.List({
-                noDataText:       "Please enter a store and click on Add to add a store."
-            });
+            this._oList.unbindAggregation("items");
             this._oList.setModel(this.getModel());
             this.getBindingInfo("items").template.attachPress(this._onItemSelected.bind(this));
             // this._oList.bindItems(this.getBindingInfo("items").path, 

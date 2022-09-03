@@ -18,10 +18,23 @@
                         <items>
                             <FlexBox width="100%" id="box1" direction="Column">
                                 <items>
-                                    <Label text="Store" width="100%" id="label0"/>
+                                    <FlexBox width="auto" alignItems="Stretch" direction="Row">
+                                        <items>
+                                            <Label text="{i18n>labelStore}" 
+                                                   class="sapUiSmallMargin sapUiTinyMarginTopBottom"
+                                                   width="100%"/>
+                                            <Button text="{i18n>addStore}"
+                                                    type="Transparent"
+                                                    tooltip="{i18n>addStoreTooltip}"
+                                                    enabled="{= ${Grocery>/DDStoreValue} === '' ? false : true }"
+                                                    class="sapUiTinyMarginBeginEnd"
+                                                    width="100%"/>
+                                        </items>
+                                    </FlexBox>
                                     <ComboBox id="idDDStore" 
                                               class="sapUiSmallMarginEnd"
                                               placeholder="{i18n>selectStore}"
+                                              value="{Grocery>/DDStoreValue}"
                                               items="{ path: 'Grocery>/DDStore' }"
                                               selectionChange=".onStoreComboChange">
                                         <core:Item key="{Grocery>id}" text="{Grocery>name}"/>
@@ -30,7 +43,9 @@
                             </FlexBox>
                             <FlexBox width="100%" id="box3" direction="Column">
                                 <items>
-                                    <Label text="Ingredient" width="100%" id="label1"/>
+                                    <Label text="{i18n>labelIngredient}" width="100%"
+                                           class="sapUiTinyMargin sapUiTinyMarginTopBottom"
+                                    />
                                     <ComboBox id="idDDIngre" 
                                               class="sapUiSmallMarginEnd"
                                               placeholder="{i18n>selectIngredient}"
@@ -64,7 +79,7 @@
                     >
                         <swipeContent>
                             <Button
-                                text="Delete Item"
+                                text="{i18n>deleteItem}"
                                 type="Reject"
                                 press=".onHandleDelete" />
                         </swipeContent>
@@ -87,7 +102,7 @@
                                     width="100%" 
                                     >
                                 <header>
-                                    <Label text="Note/Recipe" id="label3"/>
+                                    <Label text="{i18n>noteRecipe}" id="label3"/>
                                 </header>
                             </Column>
 
@@ -123,7 +138,7 @@
                                     <!-- controls within <HBox/> count as one column -->
                                     <Input
                                         id="iDTXTRecipe"
-                                        placeholder="Enter recipe"
+                                        placeholder="{i18n>enterRecipe}"
                                         value="{Grocery>Recipe}"
                                         editable="false"
                                         liveChange=".onRecipeChange"
@@ -178,12 +193,12 @@
                         <columns>
                             <Column id="colHeader1">
                                 <header>
-                                    <Label text="Store" id="header1"/>
+                                    <Label text="{i18n>colStore}" id="header1"/>
                                 </header>
                             </Column>
                             <Column id="colHeader2">
                                 <header>
-                                    <Label text="Ingredient" id="header2"/>
+                                    <Label text="{i18n>colIngredient}" id="header2"/>
                                 </header>
                             </Column>
                             <Column id="colHeader3"
@@ -191,7 +206,7 @@
                                     demandPopin="true"
                             >
                                 <header>
-                                    <Label text="Note/Recipe" 
+                                    <Label text="{i18n>noteRecipe}" 
                                            id="header3"/>
                                 </header>
                             </Column>
@@ -200,7 +215,7 @@
                                     demandPopin="true"
                             >
                                 <header>
-                                    <Label text="Changed On" id="header4"/>
+                                    <Label text="{i18n>colChangedOn}" id="header4"/>
                                 </header>
                             </Column>
                         </columns>
