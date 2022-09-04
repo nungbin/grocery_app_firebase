@@ -131,22 +131,22 @@
       },
       "routes": [
         {
-          "name": "RouteView1",
-          "pattern": ":?query:",
+          "name": "FirstView1",
+          "pattern": "",
           "target": [
-            "TargetView1"
+            "FirstView1"
           ]
         },
         {
           "name": "SignedInView",
           "pattern": "signedIn",
           "target": [
-             "SignedInView"
+            "SignedInView"
           ]
         }
       ],
       "targets": {
-        "TargetView1": {
+        "FirstView1": {
           "viewType": "XML",
           "transition": "slide",
           "clearControlAggregation": false,

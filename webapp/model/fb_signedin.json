@@ -1,8 +1,9 @@
 {
-    "signedInUser":    "",
-    "DDStoreValue":    "",
-    "DDStore":         [],
-    "DDIngre":         [],
-    "GroceryList":     [],
-    "PastGroceryList": []
+    "signedInUser":     "",
+    "groceryModelName": "Grocery",
+    "DDStoreValue":     "",
+    "DDStore":          [],
+    "DDIngre":          [],
+    "GroceryList":      [],
+    "PastGroceryList":  []
 }

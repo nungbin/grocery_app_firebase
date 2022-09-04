@@ -5,11 +5,14 @@ sap.ui.define([
     "sap/m/MessageToast",    
 ], function(Filter, FilterOperator, MessageBox, MessageToast) {
 	"use strict";
-    const sUsername = "username";
-    const sPassword = "password";
+    const sUsername    = "username";
+    const sPassword    = "password";
+    const sInsuffPermi = "insufficient permissions";;
+    let groceryModelName;
 
     return {
         initFirebase(controller) {
+            groceryModelName = controller.getOwnerComponent().getModel("fb_signedIn_m").getProperty("/groceryModelName");
             const firebaseConfig = controller.getOwnerComponent().getModel("fb_login_m").getData();
             return firebase.initializeApp(firebaseConfig);
         },
@@ -134,6 +137,7 @@ sap.ui.define([
             }
             catch (error) {
                 console.log('Error getting documents', error);
+                throw error;
             }
         },
 
@@ -323,7 +327,8 @@ sap.ui.define([
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", tGrocery);
             }
             catch(error) {
-                console.log('Error getting documents', error); 
+                console.log('Error getting documents', error);
+                throw error; 
             }
         },
 
@@ -506,7 +511,8 @@ sap.ui.define([
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/PastGroceryList", tGrocery);
             }
             catch(error) {
-                console.log('Error getting documents', error); 
+                console.log('Error getting documents', error);
+                throw error; 
             }
         },
 
@@ -529,8 +535,12 @@ sap.ui.define([
                 oGlobalBusyDialog.close();
             })
             .catch((error) => {
-                console.error(error.message);
                 oGlobalBusyDialog.close();
+                if (error !== undefined && typeof(error) === 'object' && error.toString().includes(sInsuffPermi)) {
+                    const msg = oController._i18n.getText("insufficientPermission");
+                    sap.m.MessageToast.show(msg);
+                    oController.getOwnerComponent().getRouter().navTo("FirstView1");
+                }
             });            
             //await this._getStores(controller, firebaseApp);
             //await this._getGroceries(controller, firebaseApp);
@@ -582,6 +592,19 @@ sap.ui.define([
             oItems.forEach((oItem) => {
                 this.onPress(oItem, false);
             })
+        },
+
+        checkIfStoreExists(controller) {
+            const storeName = controller.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStoreValue");
+            const stores = controller.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStore");
+            if (storeName !== '') {
+                for (const store of stores) {
+                    if (store.name.toUpperCase() === storeName.toUpperCase()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         },
 
         _convertFirebaseDateToJSDate(fbDate) {

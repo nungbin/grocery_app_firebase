@@ -13,12 +13,24 @@ sap.ui.define([
 
         return Controller.extend("groceryappfb.controller.View1", {
             onInit: function () {
+                const that = this;
+
                 //Password field is not contained in a form
                 let oRouter = this.getOwnerComponent().getRouter();
-                oRouter.getRoute("RouteView1").attachMatched(function(oEvent) {
+                oRouter.getRoute("FirstView1").attachMatched(function(oEvent) {
                     this._firstView();
                 }, this);
 
+                this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+                this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
+                this._initFirstView();
+            },
+
+            _firstView: function() {
+                this._initFirstView();
+            },
+
+            _initFirstView: function() {
                 //https://stackoverflow.com/questions/25988860/how-call-a-function-by-pressing-enter-key-in-password-input-field-in-login-view
                 const input1 = this.getView().byId("idEmail");
                 input1.onsapenter = (function(oEvent) {
@@ -29,14 +41,8 @@ sap.ui.define([
                   this.onLogin(oEvent);
                 }).bind(this);
 
-                this._i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-                this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
                 firebaseApp = ServiceManager.initFirebase(this);
                 ServiceManager.initPass(this);
-            },
-
-            _firstView: function() {
-                firebaseApp = ServiceManager.initFirebase(this);
             },
 
             onLogin: function(oEvent) {

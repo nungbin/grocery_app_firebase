@@ -1,18 +1,18 @@
 sap.ui.define([
-    "sap/m/MessageToast",
     "sap/ui/core/mvc/Controller",
+    "sap/m/MessageToast",    
     "sap/ui/core/Fragment",
     "sap/m/MessageBox",
-    "sap/m/MessageToast",     
     "../service/ServiceManager",
     "../model/formatter"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (MessageToast, Controller, Fragment, MessageBox, Messagetoast, ServiceManager, formatter) {
+    function (Controller, MessageToast, Fragment, MessageBox, ServiceManager, formatter) {
         "use strict";
         let firebaseApp, db;
+        let groceryModelName;
 
         return Controller.extend("groceryappfb.controller.View1", {
             formatter: formatter,
@@ -31,7 +31,8 @@ sap.ui.define([
             _signedIn: function() {
                 firebaseApp = ServiceManager.initFirebase(this);
                 this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
-                this.getView().byId("page2").setModel(this._signedInModel, "Grocery");
+                groceryModelName = this.getOwnerComponent().getModel("fb_signedIn_m").getProperty("/groceryModelName");
+                this.getView().byId("page2").setModel(this._signedInModel, groceryModelName);
                 ServiceManager.initialLoad(this, firebaseApp, "initialLoad");
             },
 
@@ -122,7 +123,7 @@ sap.ui.define([
                     let msgIngre = this._i18n.getText("confirmMoveGrocery");
                     var oList = this.getView().byId("iDtblGroceryList"); // get the list using its Id
                     const iDirtyRowIndex = oList.indexOfItem(oEvent.getSource().getParent());
-                    let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                    let groceryList = this.getView().byId("page2").getModel(groceryModelName).getProperty("/GroceryList");
                     msgIngre = msgIngre.replace("&&", groceryList[iDirtyRowIndex].Ingredient);
                     MessageBox.show(msgIngre, {
                         icon: MessageBox.Icon.QUESTION,
@@ -174,14 +175,14 @@ sap.ui.define([
 
             onRecipeChange: function(oEvent) {
                 const iDirtyRowIndex = this.getView().byId("iDtblGroceryList").indexOfItem(oEvent.getSource().getParent());
-                let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                let groceryList = this.getView().byId("page2").getModel(groceryModelName).getProperty("/GroceryList");
                 groceryList[iDirtyRowIndex].dirtyRecipe = oEvent.getSource().getValue();
             },
 
             onSaveRecipe: function(oEvent) {
                 const that = this;
                 const oObject = oEvent.getSource();
-                let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                let groceryList = this.getView().byId("page2").getModel(groceryModelName).getProperty("/GroceryList");
                 const txt = this._i18n.getText("savingRecipe");
                 const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
                 oGlobalBusyDialog.open();
@@ -201,7 +202,7 @@ sap.ui.define([
                 const sTitle = this._i18n.getText("confirmation");
                 const oObject = oEvent.getSource();
                 let msgIngre = this._i18n.getText("unsavedRecipe");
-                let groceryList = this.getView().byId("page2").getModel("Grocery").getProperty("/GroceryList");
+                let groceryList = this.getView().byId("page2").getModel(groceryModelName).getProperty("/GroceryList");
                 const bDirty = ServiceManager.checkIfDirtyRecipeEdit(this);
                 if (bDirty === true) {
                     sap.m.MessageBox.confirm(msgIngre, {
@@ -254,6 +255,14 @@ sap.ui.define([
                     oCell.setVisible(oFlag);                      
                   }
                 });
+            },
+
+            onAddStore: function(oEvent) {
+                const storeName = this.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStoreValue");
+                if (ServiceManager.checkIfStoreExists(this)) {
+                    let msg = this._i18n.getText("storeExisted");
+                    MessageToast.show(msg.replace('&&', storeName));
+                }
             }
         });
     });
