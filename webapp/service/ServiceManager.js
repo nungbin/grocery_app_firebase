@@ -124,7 +124,7 @@ sap.ui.define([
             const db = firebaseApp.firestore();
 
             try {
-                const snapshot = await db.collection("store").orderBy("name").get();
+                const snapshot = await db.collection("store").where("enable", "==", true).orderBy("name").get();
                 const tStores = [];
                 snapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
@@ -249,7 +249,6 @@ sap.ui.define([
             catch (error) {
                 console.log('Error getting documents', error);
             }
-
         },
 
         async confirmToAddGrocery(controller, firebaseApp) {
@@ -488,6 +487,38 @@ sap.ui.define([
             }
         },
 
+        async saveStoreToDatabase(controller, firebaseApp) {
+            const ab = "ab";
+            const db = firebaseApp.firestore();
+            try {
+                const shortName = ab + this.generateUUID().toString();
+                let t = {
+                    name:      controller.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStoreValue"),
+                    shortName: shortName,
+                    enable:    true
+                }
+                let tt = {
+                    id:   shortName,
+                    name: t.name
+                }
+                let storeModel = controller.getView().byId("page2").getModel("Grocery").getProperty("/DDStore");
+                await db.collection("store").add(t);
+                storeModel.push(tt);
+                storeModel.sort(function(a, b) {
+                    return a["name"] - b["name"];
+                });
+                controller.getView().byId("page2").getModel("Grocery").setProperty("/DDStore", storeModel);
+                controller.getView().byId("idDDStore").setSelectedKey(shortName);
+
+                let msg=controller._i18n.getText("storeSaved");
+                msg = msg.replace('&&', t.name);
+                MessageToast.show(msg);
+            }
+            catch (error) {
+                console.log('Error getting documents', error);
+            }            
+        },
+
         async _getPastGroceries(controller, firebaseApp) {
             const tGrocery = [];
             const db = firebaseApp.firestore();
@@ -594,6 +625,14 @@ sap.ui.define([
             })
         },
 
+        checkIfBlankStore(controller) {
+            const storeName = controller.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStoreValue");
+            if (storeName === '') {
+                return true;
+            }
+            return false;
+        },
+
         checkIfStoreExists(controller) {
             const storeName = controller.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStoreValue");
             const stores = controller.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStore");
@@ -618,6 +657,12 @@ sap.ui.define([
             );
             return fireBaseTime.toDateString();
             //const atTime = fireBaseTime.toLocaleTimeString();            
+        },
+
+        //https://stackoverflow.com/questions/3231459/how-can-i-create-unique-ids-with-javascript
+        generateUUID: function() {
+            const length=5;
+            return parseInt(Math.ceil(Math.random() * Date.now()).toPrecision(length).toString().replace(".", ""))
         }
     }
 })

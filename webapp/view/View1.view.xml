@@ -5,6 +5,7 @@
 	xmlns:l="sap.ui.layout"
 	xmlns:f="sap.ui.layout.form"
 	xmlns:core="sap.ui.core"
+    xmlns:cust="groceryappfb.control"
     >
     <Page id="page" showHeader="false">
         <content>
@@ -55,6 +56,19 @@
                         </f:FormContainer>
                     </f:formContainers>
                 </f:Form>
+            </VBox>
+            <VBox visible="false">
+                <items>
+                    <cust:CustomDropdown id="idCustDropdown"
+                                         placeholder="{/test/placeholder}"
+                                         selectionChange=".onItemSelected"
+                                         addStore=".onAddStore"
+                                         items="{/test2}" >
+                        <cust:items>
+                            <ActionListItem text="{text}"/>
+                        </cust:items>
+                    </cust:CustomDropdown>
+                </items>
             </VBox>
         </content>
         <footer>

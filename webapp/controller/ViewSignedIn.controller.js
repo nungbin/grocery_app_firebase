@@ -258,10 +258,33 @@ sap.ui.define([
             },
 
             onAddStore: function(oEvent) {
+                let msg;
+                const that = this;
+                const sTitle = this._i18n.getText("confirmation");
                 const storeName = this.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStoreValue");
+                if (ServiceManager.checkIfBlankStore(this)) {
+                    msg = this._i18n.getTexT("blankStore");
+                    MessageToast.show(msg);
+                    return;
+                }
                 if (ServiceManager.checkIfStoreExists(this)) {
                     let msg = this._i18n.getText("storeExisted");
                     MessageToast.show(msg.replace('&&', storeName));
+                }
+                else {
+                    msg = this._i18n.getText("confirmSaveStore");
+                    msg = msg.replace('&&', storeName);
+                    sap.m.MessageBox.confirm(msg, {
+                        icon: MessageBox.Icon.QUESTION,
+                        title: sTitle,
+                        actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                        emphasizedAction: MessageBox.Action.NO,
+                        onClose: function(oAction) {
+                          if (oAction === 'YES') {
+                            ServiceManager.saveStoreToDatabase(that, firebaseApp);
+                          }
+                        }
+                    });
                 }
             }
         });

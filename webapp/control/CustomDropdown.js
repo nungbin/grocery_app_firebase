@@ -6,7 +6,7 @@
 // Released under the MIT license: http://jsbin.mit-license.org
 sap.ui.define(["sap/ui/core/Control"], function(Control) {
 	"use strict";
-	return Control.extend("DemoCustomControl.control.CustomDropdown", {
+	return Control.extend("groceryappfb.control.CustomDropdown", {
         metadata: {
             properties : {
                 placeholder: {type : "string", defaultValue : ""}

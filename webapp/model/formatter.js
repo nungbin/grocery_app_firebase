@@ -1,8 +1,11 @@
-sap.ui.define([],
-    function() {
+sap.ui.define([
+    "../service/ServiceManager"
+],
+    function(ServiceManager) {
         "use strict";
         const valueColorCritical  = "Critical",
               valueColorGood      = "Good";
+        let groceryModelName;
         
         return {
             convertFirebaseDateToJSDate: function(fbDate) {
@@ -21,6 +24,10 @@ sap.ui.define([],
                 }
                 return tTime;
                 //const atTime = fireBaseTime.toLocaleTimeString();            
+            },
+
+            checkIfStoreBlank: function(storeName) {
+                groceryModelName = this.getOwnerComponent().getModel("fb_signedIn_m").getProperty("/groceryModelName");
             }
         }
     }
