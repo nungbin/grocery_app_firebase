@@ -2,8 +2,9 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
-    "sap/m/MessageToast",    
-], function(Filter, FilterOperator, MessageBox, MessageToast) {
+    "sap/m/MessageToast",
+    "../controller/addIngredient.controller"
+], function(Filter, FilterOperator, MessageBox, MessageToast, ctrlAddIngredient) {
 	"use strict";
     const sUsername    = "username";
     const sPassword    = "password";
@@ -188,6 +189,22 @@ sap.ui.define([
         },
         
         async addIngredientToDatabase(controller, firebaseApp) {
+            // const controller2 = controller;
+            // if (!controller.byId("idAddIngreDialog")) {
+            //     // load asynchronous XML fragment
+            //     sap.ui.core.Fragment.load({
+            //         id: controller.getView().getId(),
+            //         name: "groceryappfb.view.addIngredient",
+            //         controller: new ctrlAddIngredient()
+            //     }).then(function (oDialog) {
+            //         // connect dialog to the root view of this component (models, lifecycle)
+            //         controller2.getView().addDependent(oDialog);
+            //         oDialog.open();
+            //     });
+            // } else {
+            //     controller.byId("idAddIngreDialog").open();
+            // }
+            // return;
             const that = this;
             const oController = controller;
             const oFirebaseApp = firebaseApp;

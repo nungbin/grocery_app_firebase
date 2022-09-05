@@ -14,7 +14,7 @@ sap.ui.define([
         let firebaseApp, db;
         let groceryModelName;
 
-        return Controller.extend("groceryappfb.controller.View1", {
+        return Controller.extend("groceryappfb.controller.ViewSignedIn", {
             formatter: formatter,
             
             onInit: function() {
