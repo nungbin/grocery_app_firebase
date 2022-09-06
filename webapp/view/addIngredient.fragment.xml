@@ -1,14 +1,12 @@
 <core:FragmentDefinition xmlns="sap.m" 
                          xmlns:core="sap.ui.core"
 >
-   <Dialog id="idAddIngreDialog" title="{image>/ingredient}" draggable="true" resizable="true">
+   <Dialog id="idAddIngreDialog" title="{i18n>ingreToStore}" draggable="true" resizable="true">
       <content>
-        <List noDataText="Drop list items here" id="list0">
+        <List items="{ingreToStore>/}"
+		      mode="MultiSelect">
             <items>
-                <StandardListItem type="Navigation" 
-                                  title="List Item 1" 
-                                  description="Description text" 
-                                  icon="sap-icon://picture" 
+                <StandardListItem title="{ingreToStore>name}" 
                 />
             </items>
         </List>

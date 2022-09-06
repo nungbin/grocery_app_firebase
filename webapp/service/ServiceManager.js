@@ -3,8 +3,9 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
+    "sap/ui/model/json/JSONModel",
     "../controller/addIngredient.controller"
-], function(Filter, FilterOperator, MessageBox, MessageToast, ctrlAddIngredient) {
+], function(Filter, FilterOperator, MessageBox, MessageToast, JSONModel, ctrlAddIngredient) {
 	"use strict";
     const sUsername    = "username";
     const sPassword    = "password";
@@ -198,6 +199,20 @@ sap.ui.define([
             //         controller: new ctrlAddIngredient()
             //     }).then(function (oDialog) {
             //         // connect dialog to the root view of this component (models, lifecycle)
+            //         let t = [];
+            //         const keyStore = controller2.getView().byId("idDDStore").getSelectedKey();
+            //         const storeModel = controller2.getView().byId("page2").getModel("Grocery").getProperty("/DDStore");
+            //         storeModel.forEach((store, i) => {
+            //             let tt = store;
+            //             tt.flag = false;
+            //             if (store.id === keyStore) {
+            //                 tt.flag = true;
+            //             }
+            //             t.push(tt);
+            //         })
+            //         //controller2.getOwnerComponent().getModel("fb_signedIn_m").setProperty("/saveIngreToStore", t);
+            //         let tModel = new JSONModel(t);
+            //         oDialog.setModel(tModel, "ingreToStore");
             //         controller2.getView().addDependent(oDialog);
             //         oDialog.open();
             //     });
