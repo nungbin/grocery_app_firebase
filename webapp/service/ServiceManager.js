@@ -3,9 +3,8 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
-    "sap/ui/model/json/JSONModel",
     "../controller/addIngredient.controller"
-], function(Filter, FilterOperator, MessageBox, MessageToast, JSONModel, ctrlAddIngredient) {
+], function(Filter, FilterOperator, MessageBox, MessageToast, ctrlAddIngredient) {
 	"use strict";
     const sUsername    = "username";
     const sPassword    = "password";
@@ -200,6 +199,7 @@ sap.ui.define([
             //     }).then(function (oDialog) {
             //         // connect dialog to the root view of this component (models, lifecycle)
             //         let t = [];
+            //         const enteredIngredient = controller2.getView().byId("idDDIngre").getValue();
             //         const keyStore = controller2.getView().byId("idDDStore").getSelectedKey();
             //         const storeModel = controller2.getView().byId("page2").getModel("Grocery").getProperty("/DDStore");
             //         storeModel.forEach((store, i) => {
@@ -210,9 +210,14 @@ sap.ui.define([
             //             }
             //             t.push(tt);
             //         })
-            //         //controller2.getOwnerComponent().getModel("fb_signedIn_m").setProperty("/saveIngreToStore", t);
-            //         let tModel = new JSONModel(t);
-            //         oDialog.setModel(tModel, "ingreToStore");
+            //         let tTitle = controller2._i18n.getText("ingreToStore")
+            //         oDialog.setTitle(tTitle.replace('&&', enteredIngredient));
+            //         oDialog.setModel(controller2._signedInModel, "ingreToStore");
+            //         oDialog.getModel("ingreToStore").setProperty("/saveIngreToStore/ingredient", enteredIngredient);
+            //         oDialog.getModel("ingreToStore").setProperty("/saveIngreToStore/saveIngreToStore", t);
+            //         //https://blogs.sap.com/2016/09/16/custom-data-types-in-sapui5/
+            //         //Below statement is needed to trigger the field validation logic
+            //         sap.ui.getCore().getMessageManager().registerObject(oDialog, true);
             //         controller2.getView().addDependent(oDialog);
             //         oDialog.open();
             //     });
@@ -220,6 +225,7 @@ sap.ui.define([
             //     controller.byId("idAddIngreDialog").open();
             // }
             // return;
+
             const that = this;
             const oController = controller;
             const oFirebaseApp = firebaseApp;

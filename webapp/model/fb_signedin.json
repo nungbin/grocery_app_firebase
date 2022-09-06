@@ -6,5 +6,9 @@
     "DDIngre":          [],
     "GroceryList":      [],
     "PastGroceryList":  [],
-    "saveIngreToStore": []
+    "saveIngreToStore": {
+        "ingredient":       "",
+        "JPGURL":           "",
+        "saveIngreToStore": []
+    }
 }

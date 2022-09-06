@@ -1,15 +1,23 @@
 <core:FragmentDefinition xmlns="sap.m" 
                          xmlns:core="sap.ui.core"
 >
-   <Dialog id="idAddIngreDialog" title="{i18n>ingreToStore}" draggable="true" resizable="true">
+   <Dialog id="idAddIngreDialog" draggable="true" resizable="true">
       <content>
-        <List items="{ingreToStore>/}"
+        <List items="{ingreToStore>/saveIngreToStore/saveIngreToStore}"
 		      mode="MultiSelect">
             <items>
-                <StandardListItem title="{ingreToStore>name}" 
+                <StandardListItem title="{ingreToStore>name}"
+                                  selected="{ingreToStore>flag}"
                 />
             </items>
         </List>
+        <Input value="{
+                 path: 'ingreToStore>/saveIngreToStore/JPGURL',
+                 type: 'groceryappfb.model.customJPGURLValidator'
+               }"
+               placeholder="{i18n>validHTTPJPGFormat}"
+               tooltip="{i18n>httpJPGFormat}"
+        />
       </content>
       <beginButton>
          <Button text="Close" press=".onCloseAddIngreDialog"/>
