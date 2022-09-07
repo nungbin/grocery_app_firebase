@@ -7,6 +7,7 @@
     "GroceryList":      [],
     "PastGroceryList":  [],
     "saveIngreToStore": {
+        "OK":               false,
         "ingredient":       "",
         "JPGURL":           "",
         "saveIngreToStore": []

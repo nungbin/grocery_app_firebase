@@ -1,26 +1,57 @@
 <core:FragmentDefinition xmlns="sap.m" 
                          xmlns:core="sap.ui.core"
+                         xmlns:l="sap.ui.layout"
 >
    <Dialog id="idAddIngreDialog" draggable="true" resizable="true">
       <content>
-        <List items="{ingreToStore>/saveIngreToStore/saveIngreToStore}"
-		      mode="MultiSelect">
-            <items>
-                <StandardListItem title="{ingreToStore>name}"
-                                  selected="{ingreToStore>flag}"
+        <VBox class="sapUiResponsiveMargin">
+            <List items="{ingreToStore>/saveIngreToStore/saveIngreToStore}"
+                  mode="MultiSelect">
+                <items>
+                    <StandardListItem title="{ingreToStore>name}"
+                                      selected="{ingreToStore>flag}"
+                    />
+                </items>
+            </List>
+        </VBox>
+        <l:VerticalLayout
+            width="100%">
+            <l:content>
+                <Label text="{i18n>lblHttpJPGFormat}"/>
+                <Input value="{
+                          path: 'ingreToStore>/saveIngreToStore/JPGURL',
+                          type: 'groceryappfb.model.customJPGURLValidator'
+                       }"
+                       class="sapUiTinyMarginBeginEnd"
+                       placeholder="{i18n>validHTTPJPGFormat}"
+                       tooltip="{i18n>httpJPGFormat}"
                 />
-            </items>
-        </List>
-        <Input value="{
-                 path: 'ingreToStore>/saveIngreToStore/JPGURL',
-                 type: 'groceryappfb.model.customJPGURLValidator'
-               }"
-               placeholder="{i18n>validHTTPJPGFormat}"
-               tooltip="{i18n>httpJPGFormat}"
-        />
+                <Link
+                    text="{i18n>lnkJPGURL}"
+                    class="sapUiTinyMarginBeginEnd"
+                    target="_blank"
+                    enabled="{= ${ingreToStore>/saveIngreToStore/JPGURL} === '' ? false : true}"
+                    href="{ingreToStore>/saveIngreToStore/JPGURL}" />
+            </l:content>
+        </l:VerticalLayout>
       </content>
       <beginButton>
-         <Button text="Close" press=".onCloseAddIngreDialog"/>
+        <Button type="Reject"
+                text="{i18n>Cancel}"
+                press=".onPressCancel">
+            <layoutData>
+                <FlexItemData growFactor="1" />
+            </layoutData>
+        </Button>
       </beginButton>
+      <endButton>
+        <Button type="Accept"
+                text="{i18n>OK}"
+                press=".onPressOk">
+            <layoutData>
+                <FlexItemData growFactor="1" />
+            </layoutData>
+        </Button>
+      </endButton>
     </Dialog>   
 </core:FragmentDefinition>
