@@ -193,6 +193,11 @@ sap.ui.define([
             const firebaseApp2 = firebaseApp;
             const that2 = this;
             const diagCtrl = new ctrlAddIngredient();
+            if (controller.byId("idAddIngreDialog")) {
+                //to avoid enteredIngredient not being loaded at all.
+                //by adding the line below, the if-else block will not execute.
+                controller.byId("idAddIngreDialog").destroy();
+            }
             if (!controller.byId("idAddIngreDialog")) {
                 // load asynchronous XML fragment
                 sap.ui.core.Fragment.load({
@@ -274,7 +279,6 @@ sap.ui.define([
             storeModel.forEach((store) => {
                 ingredient[store.id] = store.flag;
             })
-            debugger;
             if (controller.getOwnerComponent().getModel("fb_signedIn_m").getProperty("/saveIngreToStore/JPGURL") === '' ||
                 controller.getOwnerComponent().getModel("fb_signedIn_m").getProperty("/saveIngreToStore/JPGURL") === null) {
                 ingredient.url = null;
