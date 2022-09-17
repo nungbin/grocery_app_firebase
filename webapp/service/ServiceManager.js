@@ -191,75 +191,49 @@ sap.ui.define([
         async addIngredientToDatabase(controller, firebaseApp) {
             const controller2 = controller;
             const firebaseApp2 = firebaseApp;
-            const that2 = this;
-            const diagCtrl = new ctrlAddIngredient();
-            if (controller.byId("idAddIngreDialog")) {
-                //to avoid enteredIngredient not being loaded at all.
-                //by adding the line below, the if-else block will not execute.
-                controller.byId("idAddIngreDialog").destroy();
-            }
-            if (!controller.byId("idAddIngreDialog")) {
-                // load asynchronous XML fragment
-                sap.ui.core.Fragment.load({
-                    id: controller.getView().getId(),
-                    name: "groceryappfb.view.addIngredient",
-                    controller: diagCtrl
-                }).then(function (oDialog) {
-                    // connect dialog to the root view of this component (models, lifecycle)
-                    let t = [];
-                    const enteredIngredient = controller2.getView().byId("idDDIngre").getValue();
-                    const keyStore = controller2.getView().byId("idDDStore").getSelectedKey();
-                    const storeModel = controller2.getView().byId("page2").getModel("Grocery").getProperty("/DDStore");
-                    storeModel.forEach((store, i) => {
-                        let tt = store;
-                        tt.flag = false;
-                        if (store.id === keyStore) {
-                            tt.flag = true;
-                        }
-                        t.push(tt);
-                    })
-                    let tTitle = controller2._i18n.getText("ingreToStore")
-                    oDialog.setTitle(tTitle.replace('&&', enteredIngredient)); //a dumb bug in i18n with ''
-                    oDialog.setModel(controller2._signedInModel, "ingreToStore");
-                    oDialog.getModel("ingreToStore").setProperty("/saveIngreToStore/ingredient", enteredIngredient);
-                    oDialog.getModel("ingreToStore").setProperty("/saveIngreToStore/saveIngreToStore", t);
-                    //https://blogs.sap.com/2016/09/16/custom-data-types-in-sapui5/
-                    //Below statement is needed to trigger the field validation logic
-                    sap.ui.getCore().getMessageManager().registerObject(oDialog, true);
-                    controller2.getView().addDependent(oDialog);
-                    diagCtrl.onInit(controller2, firebaseApp2, that2);
-                    oDialog.open();
-                });
-            } else {
-                controller.byId("idAddIngreDialog").open();
-            }
-            return;
-
             const that = this;
-            const oController = controller;
-            const oFirebaseApp = firebaseApp;
-            const enteredIngredient = controller.getView().byId("idDDIngre").getValue();
-            let msgIngre = controller._i18n.getText("missingIngredient");
-            const sTitle = controller._i18n.getText("confirmation");
-            msgIngre = msgIngre.replace("&&", enteredIngredient);
+            const diagCtrl = new ctrlAddIngredient();
             if (!this._checkIfIngredientExists(controller)) {
-                MessageBox.show(msgIngre, {
-                    icon: MessageBox.Icon.QUESTION,
-                    title: sTitle ,
-                    actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                    emphasizedAction: MessageBox.Action.NO,
-                    onClose: async function (oAction) {
-                        if (oAction === 'YES') {
-                            const oGlobalBusyDialog = new sap.m.BusyDialog({text: "Adding " + enteredIngredient + " to database..."});
-                            oGlobalBusyDialog.open();
-                            //insert ingredient to database
-                            await that.insertIngredientToDatabase(controller, firebaseApp);
-
-                            oGlobalBusyDialog.close();
-                        }
-                        await that.confirmToAddGrocery(controller, firebaseApp);
-                    }
-                });
+                if (controller.byId("idAddIngreDialog")) {
+                    //to avoid enteredIngredient not being loaded at all.
+                    //by adding the line below, the if-else block will not execute.
+                    controller.byId("idAddIngreDialog").destroy();
+                }
+                if (!controller.byId("idAddIngreDialog")) {
+                    // load asynchronous XML fragment
+                    sap.ui.core.Fragment.load({
+                        id: controller.getView().getId(),
+                        name: "groceryappfb.view.addIngredient",
+                        controller: diagCtrl
+                    }).then(function (oDialog) {
+                        // connect dialog to the root view of this component (models, lifecycle)
+                        let t = [];
+                        const enteredIngredient = controller2.getView().byId("idDDIngre").getValue();
+                        const keyStore = controller2.getView().byId("idDDStore").getSelectedKey();
+                        const storeModel = controller2.getView().byId("page2").getModel("Grocery").getProperty("/DDStore");
+                        storeModel.forEach((store, i) => {
+                            let tt = store;
+                            tt.flag = false;
+                            if (store.id === keyStore) {
+                                tt.flag = true;
+                            }
+                            t.push(tt);
+                        })
+                        let tTitle = controller2._i18n.getText("ingreToStore")
+                        oDialog.setTitle(tTitle.replace('&&', enteredIngredient)); //a dumb bug in i18n with ''
+                        oDialog.setModel(controller2._signedInModel, "ingreToStore");
+                        oDialog.getModel("ingreToStore").setProperty("/saveIngreToStore/ingredient", enteredIngredient);
+                        oDialog.getModel("ingreToStore").setProperty("/saveIngreToStore/saveIngreToStore", t);
+                        //https://blogs.sap.com/2016/09/16/custom-data-types-in-sapui5/
+                        //Below statement is needed to trigger the field validation logic
+                        sap.ui.getCore().getMessageManager().registerObject(oDialog, true);
+                        controller2.getView().addDependent(oDialog);
+                        diagCtrl.onInit(controller2, firebaseApp2, that);
+                        oDialog.open();
+                    });
+                } else {
+                    controller.byId("idAddIngreDialog").open();
+                }
             } else {
                 await this.confirmToAddGrocery(controller, firebaseApp);
             }
