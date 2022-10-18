@@ -88,7 +88,7 @@
                             <Column width="3.5em">
                                 <Text text="" />
                             </Column>
-                            <Column id="column1" width="100%">
+                            <Column id="column1" width="5em">
                                 <Text text="Store" />
                             </Column>
                             <Column id="column2" 
@@ -98,9 +98,9 @@
                                 </header>
                             </Column>
                             <Column id="column3" 
-                                    minScreenWidth="Tablet"
+                                    minScreenWidth="Desktop"
                                     demandPopin="true"
-                                    width="100%" 
+                                    width="120%" 
                                     >
                                 <header>
                                     <Label text="{i18n>noteRecipe}" id="label3"/>
@@ -108,12 +108,12 @@
                             </Column>
 
                             <Column width="25%"
-                                    minScreenWidth="Tablet"
+                                    minScreenWidth="Desktop"
                                     demandPopin="true"
                             >
                             </Column>
                             <Column width="25%"
-                                    minScreenWidth="Tablet"
+                                    minScreenWidth="Desktop"
                                     demandPopin="true"
                             >
                             </Column>
@@ -143,7 +143,12 @@
                                         value="{Grocery>Recipe}"
                                         editable="false"
                                         liveChange=".onRecipeChange"
-                                        class="sapUiSmallMarginBottom">
+                                        class="sapUiSmallMarginBottom"
+                                        showSuggestion="true"
+                                        suggestionItems="{Grocery>/suggestionItems}">
+                                        <suggestionItems>
+                                            <core:Item text="{Grocery>recipe}" />
+                                        </suggestionItems>
                                     </Input>
                                     <Button  
                                             type="Transparent" 

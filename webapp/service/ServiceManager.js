@@ -8,6 +8,7 @@ sap.ui.define([
 	"use strict";
     const sUsername    = "username";
     const sPassword    = "password";
+    const conRecipe    = "recipe";
     const sInsuffPermi = "insufficient permissions";;
     let groceryModelName;
 
@@ -507,6 +508,8 @@ sap.ui.define([
                 groceryList[iIndex].Recipe = groceryList[iIndex].dirtyRecipe;
                 groceryList[iIndex].originalRecipe = groceryList[iIndex].Recipe;
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/GroceryList", groceryList);
+
+                controller._tempArrayRecipe.push(groceryList[iIndex].dirtyRecipe);
             }
             catch(error) {
                 console.log('Error getting documents', error); 
@@ -683,6 +686,34 @@ sap.ui.define([
             );
             return fireBaseTime.toDateString();
             //const atTime = fireBaseTime.toLocaleTimeString();            
+        },
+
+        cacheEnteredRecipe: function(controller, pRecipes) {
+            const iKeepTen = 10;
+        // const testing = [];
+        // localStorage.setItem(conRecipe, JSON.stringify(testing));
+        // return;
+            let arrayRecipe = localStorage.getItem(conRecipe);
+            if (arrayRecipe === null) {
+                arrayRecipe = [];
+            }
+            else {
+                arrayRecipe = JSON.parse(arrayRecipe);
+            }
+            pRecipes.forEach((recipe) => {
+                if (arrayRecipe.indexOf(recipe) === -1) {
+                    let temp = {};
+                    temp.recipe = recipe;
+                    arrayRecipe.unshift(temp); //only add when not found
+                }
+            })
+            if (pRecipes.length) {
+                arrayRecipe = arrayRecipe.slice(0, iKeepTen);
+                localStorage.setItem(conRecipe, JSON.stringify(arrayRecipe));    
+            }
+
+            let temp1 = controller.getView().byId("page2").getModel(groceryModelName);
+            temp1.setProperty("/suggestionItems", arrayRecipe);
         },
 
         //https://stackoverflow.com/questions/3231459/how-can-i-create-unique-ids-with-javascript

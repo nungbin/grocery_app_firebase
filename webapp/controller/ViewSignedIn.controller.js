@@ -33,6 +33,7 @@ sap.ui.define([
                 this._signedInModel = this.getOwnerComponent().getModel("fb_signedIn_m");
                 groceryModelName = this.getOwnerComponent().getModel("fb_signedIn_m").getProperty("/groceryModelName");
                 this.getView().byId("page2").setModel(this._signedInModel, groceryModelName);
+                ServiceManager.cacheEnteredRecipe(this, []);
                 ServiceManager.initialLoad(this, firebaseApp, "initialLoad");
             },
 
@@ -182,6 +183,7 @@ sap.ui.define([
             onSaveRecipe: function(oEvent) {
                 const that = this;
                 const oObject = oEvent.getSource();
+                this._tempArrayRecipe = [];
                 let groceryList = this.getView().byId("page2").getModel(groceryModelName).getProperty("/GroceryList");
                 const txt = this._i18n.getText("savingRecipe");
                 const oGlobalBusyDialog = new sap.m.BusyDialog({text: txt});
@@ -194,6 +196,8 @@ sap.ui.define([
                     ServiceManager.resetRecipeFields(oObject, groceryList);
                     ServiceManager.resetGroceryListView(that);
                     oGlobalBusyDialog.close();
+
+                    ServiceManager.cacheEnteredRecipe(that, that._tempArrayRecipe)
                 })
             },
 
