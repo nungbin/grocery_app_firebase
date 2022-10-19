@@ -268,7 +268,7 @@ sap.ui.define([
                 let tIngre = {
                     id:   ingreModel.length,
                     name: enteredIngredient,
-                    url:  null
+                    url:  ingredient.url
                 }
                 ingreModel.push(tIngre);
                 controller.getView().byId("page2").getModel("Grocery").setProperty("/DDIngre", ingreModel);
@@ -307,6 +307,13 @@ sap.ui.define([
 
                         if (keyIngre.length > 0) {
                             tURL = ingreData.DDIngre[keyIngre].url;
+                        }
+                        else {
+                            //try to find it again since it could be a newly added ingredient
+                            let result = ingreData.DDIngre.find(ingre => ingre.name === enteredIngredient);
+                            if (result !== "undefined") {
+                                tURL = result.url;
+                            }
                         }
                         const db = oFirebaseApp.firestore();
                         try {
