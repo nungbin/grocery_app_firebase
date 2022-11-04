@@ -69,7 +69,15 @@ sap.ui.define([
                   return;
                 }
                 firebaseApp = ServiceManager.initFirebase(this);
-                ServiceManager.addIngredientToDatabase(this, firebaseApp);        
+                if (ServiceManager.checkIfStoreExists(this)) {
+                    ServiceManager.addIngredientToDatabase(this, firebaseApp);        
+                }
+                else {
+                    let sMsg = this._i18n.getText("addStoreFirst");
+                    const storeName = this.getView().byId("page2").getModel(groceryModelName).getProperty("/DDStoreValue");
+                    sMsg = sMsg.replace('&&', storeName);
+                    MessageToast.show(sMsg);
+                }
             },
 
             onHandleRefresh: function(oEvent) {
