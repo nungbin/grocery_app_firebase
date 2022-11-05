@@ -4,7 +4,7 @@
 |**Generation Date and Time**<br>Mon Aug 08 2022 21:32:24 GMT+0000 (Coordinated Universal Time)|
 |**App Generator**<br>@sap/generator-fiori-freestyle|
 |**App Generator Version**<br>1.6.7|
-|**Generation Platform**<br>SAP Business Application Studio|
+|**Generation Platform**<br>[SAP Business Application Studio](https://account.hanatrial.ondemand.com/trial/#/home/trial)|
 |**Floorplan Used**<br>simple|
 |**Service Type**<br>None|
 |**Service URL**<br>N/A
