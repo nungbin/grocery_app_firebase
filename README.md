@@ -33,7 +33,8 @@ A Fiori application.
 1. Active NodeJS LTS (Long Term Support) version and associated supported NPM version.  (See https://nodejs.org)
 
 
-### To make the app applicable for mobile, keep only these two libraries in manifest.json
+
+#### To make the app applicable for mobile, keep only these two libraries in manifest.json
 ```
     "libs": {
       "sap.ui.core": {},
