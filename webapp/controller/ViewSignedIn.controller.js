@@ -99,13 +99,18 @@ sap.ui.define([
                     }).then(function (oDialog) {
                         // connect dialog to the root view of this component (models, lifecycle)
                         that._imageUrlModel = that.getOwnerComponent().getModel("fb_imageUrl_m");
-                        that._imageUrlModel.getData().ingredient = that._signedInModel.getData().GroceryList[iRowIndex].Ingredient;
-                        that._imageUrlModel.getData().imageURL = that._signedInModel.getData().GroceryList[iRowIndex].URL;
+                        //that._imageUrlModel.getData().ingredient = that._signedInModel.getData().GroceryList[iRowIndex].Ingredient;
+                        //that._imageUrlModel.getData().imageURL = that._signedInModel.getData().GroceryList[iRowIndex].URL;
+                        that._imageUrlModel.setProperty("/ingredient", that._signedInModel.getData().GroceryList[iRowIndex].Ingredient);
+                        that._imageUrlModel.setProperty("/imageURL", that._signedInModel.getData().GroceryList[iRowIndex].URL);
                         that.byId("idImageDialog").setModel(that._imageUrlModel, "image");                                
                         that.getView().addDependent(oDialog);
                         oDialog.open();
                     });
                 } else {
+                    let tempImage = that.byId("idImageDialog").getModel("image");
+                    tempImage.setProperty("/ingredient", that._signedInModel.getData().GroceryList[iRowIndex].Ingredient);
+                    tempImage.setProperty("/imageURL", that._signedInModel.getData().GroceryList[iRowIndex].URL);
                     this.byId("idImageDialog").open();
                 }
             },

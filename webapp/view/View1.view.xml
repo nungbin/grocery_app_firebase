@@ -57,23 +57,8 @@
                     </f:formContainers>
                 </f:Form>
             </VBox>
-            <VBox visible="false">
-                <items>
-                    <cust:CustomDropdown id="idCustDropdown"
-                                         placeholder="{/test/placeholder}"
-                                         selectionChange=".onItemSelected"
-                                         addStore=".onAddStore"
-                                         items="{/test2}" >
-                        <cust:items>
-                            <ActionListItem text="{text}"/>
-                        </cust:items>
-                    </cust:CustomDropdown>
-                </items>
-            </VBox>
-        </content>
-        <footer>
             <Bar>
-                <contentLeft>
+                <contentMiddle>
                     <Button text="{i18n>login}"
                             press="onLogin"
                             width="7rem"
@@ -81,8 +66,8 @@
                             icon="sap-icon://accept"
                             ariaDescribedBy="defaultButtonDescription genericButtonDescription">
                     </Button>
-                </contentLeft>
-            </Bar>        
-        </footer>
+                </contentMiddle>
+            </Bar>
+        </content>
     </Page>
 </mvc:View>
