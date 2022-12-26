@@ -132,7 +132,7 @@
                                     <Text text="{Grocery>Store}"      id="iDTXTStore"/>
                                     <Link text="{Grocery>Ingredient}" 
                                           emphasized="true"
-                                          enabled="{= ${Grocery>URL} === null ? false : true }"
+                                          enabled='{= ${Grocery>URL} === null || ${Grocery>URL} === "" ? false : true }'
                                           press=".onPressIngreURL"
                                           id="iDTXTIngre" 
                                     />
